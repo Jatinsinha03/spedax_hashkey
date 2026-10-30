@@ -46,7 +46,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hello! I am your **Risk Kernel AI Copilot** on HashKey Chain.
+      content: `Hello! I am your **HashPilot AI Copilot** on HashKey Chain.
 I have read-only access to your on-chain mandate and live balance. By smart contract design, I cannot move funds directly.
 
 You can ask me to evaluate market conditions, explain your circuit breaker, or draft a policy update by saying **"Be more conservative"** or **"Tighten drawdown"**.`,
@@ -232,7 +232,7 @@ You can ask me to evaluate market conditions, explain your circuit breaker, or d
           </div>
           <div>
             <h1 className="text-xl font-extrabold text-white flex items-center gap-2.5">
-              <span>Risk Kernel AI Copilot</span>
+              <span>HashPilot AI Copilot</span>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full badge-brand">
                 Gemini Powered
               </span>

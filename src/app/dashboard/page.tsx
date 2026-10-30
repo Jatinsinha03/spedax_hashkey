@@ -181,7 +181,7 @@ export default function DashboardPage() {
                   </span>
                 </h3>
                 <p className="text-sm text-slate-300 mt-1">
-                  Contains loosened parameters. Risk Kernel invariant requires an on-chain timelock before activation.
+                  Contains loosened parameters. HashPilot invariant requires an on-chain timelock before activation.
                 </p>
               </div>
             </div>

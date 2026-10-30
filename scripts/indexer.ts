@@ -1,7 +1,7 @@
 import { pollAllVaults } from "../src/lib/indexer";
 
 async function main() {
-  console.log("Starting Risk Kernel On-Chain Event Indexer for HashKey Chain...");
+  console.log("Starting HashPilot On-Chain Event Indexer for HashKey Chain...");
   
   const pollIntervalMs = 12000; // 12 seconds per poll
 

@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
                   role: "user",
                   parts: [
                     {
-                      text: `You are the Risk Kernel AI Copilot for HashKey Chain.
+                      text: `You are the HashPilot AI Copilot for HashKey Chain.
 Vault Address: ${normalizedVault || "None"}
 Vault Metrics: ${JSON.stringify(metrics || {})}
 Vault Mandate: ${JSON.stringify(vaultData ? {
@@ -261,7 +261,7 @@ Because all modifications strictly tighten risk boundaries, this policy is class
           replyText = `You requested loosening your position cap to **${newPos} USDT**.
 
 ⚠️ **Riskier Policy Notice:**
-Because this increases your single-trade exposure, Risk Kernel invariants require this change to be **QUEUED in a timelock delay**. You will have the opportunity to cancel this queued change anytime before activation.`;
+Because this increases your single-trade exposure, HashPilot invariants require this change to be **QUEUED in a timelock delay**. You will have the opportunity to cancel this queued change anytime before activation.`;
         }
       } else if (lower.includes("status") || lower.includes("balance") || lower.includes("how is")) {
         if (metrics) {
@@ -278,7 +278,7 @@ Because this increases your single-trade exposure, Risk Kernel invariants requir
           replyText = `Your wallet has no active vault loaded. You can create a new vault using the Onboarding Wizard on the dashboard.`;
         }
       } else if (!replyText) {
-        replyText = `I am your Risk Kernel AI Copilot. You can ask me to:
+        replyText = `I am your HashPilot AI Copilot. You can ask me to:
 - Show your current vault balance and loss-floor distance
 - **"Be more conservative"** or **"Tighten drawdown"** to generate a signed policy diff
 - Ask how the circuit breaker and timelock delays protect your capital

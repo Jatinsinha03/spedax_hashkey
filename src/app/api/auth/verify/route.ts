@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Sign-in challenge expired or not found. Please request a new nonce." }, { status: 404 });
     }
 
-    const message = `Welcome to Risk Kernel.\n\nSign this message to authenticate your wallet with HashKey Chain:\nNonce: ${user.nonce}`;
+    const message = `Welcome to HashPilot.\n\nSign this message to authenticate your wallet with HashKey Chain:\nNonce: ${user.nonce}`;
 
     // Verify cryptographic signature
     const recoveredAddress = ethers.verifyMessage(message, signature).toLowerCase();

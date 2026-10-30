@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Risk Kernel | The AI trades. The contract decides.",
+  title: "HashPilot | The AI trades. The contract decides.",
   description:
     "Personal smart-contract trading vault on HashKey Chain. An autonomous AI agent hunts arbitrage on Uniswap V3 inside an on-chain mandate with automated circuit breakers.",
 };

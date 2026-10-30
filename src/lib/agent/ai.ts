@@ -62,7 +62,7 @@ export class AiService {
         requiresApproval: c.requiresApproval,
       }));
 
-      const prompt = `You are the Risk Kernel AI Agent selector on HashKey Chain.
+      const prompt = `You are the HashPilot AI Agent selector on HashKey Chain.
 Evaluate the following pre-validated arbitrage cycles. Select the single best candidate based on execution risk, liquidity, and risk-adjusted net return.
 
 Candidates:

@@ -58,7 +58,7 @@ export function Navbar() {
       {/* Brand Logo with Custom Mark */}
       <Link href="/" className="lg-brand" onClick={() => setMobileOpen(false)}>
         <i className="mk-icon" aria-hidden="true" />
-        <span className="font-extrabold tracking-tight">Risk Kernel</span>
+        <span className="font-extrabold tracking-tight">HashPilot</span>
       </Link>
 
       {/* Center Navigation Links */}

@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const message = `Welcome to Risk Kernel.\n\nSign this message to authenticate your wallet with HashKey Chain:\nNonce: ${user.nonce}`;
+    const message = `Welcome to HashPilot.\n\nSign this message to authenticate your wallet with HashKey Chain:\nNonce: ${user.nonce}`;
 
     return NextResponse.json({
       address: user.address,

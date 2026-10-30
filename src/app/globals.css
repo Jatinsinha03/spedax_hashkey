@@ -91,6 +91,11 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 
+h1 {
+  font-size: clamp(2.8rem, 8vw, 7.5rem);
+  line-height: 0.94;
+}
+
 .h {
   font-size: clamp(2.6rem, 6.6vw, 6.2rem);
 }

@@ -20,7 +20,7 @@ async function main() {
       where: { key: "GLOBAL_KILL_SWITCH" },
     });
 
-    console.log("=== Risk Kernel Agent Worker Status ===");
+    console.log("=== HashPilot Agent Worker Status ===");
     console.log(`Worker Status: ${heartbeat?.status || "offline"}`);
     console.log(`Global Kill Switch: ${killFlag?.value === "true" ? "ACTIVE (TRIPPED)" : "OFF (NORMAL)"}`);
     console.log(`Last Loop At: ${heartbeat?.lastLoopAt ? new Date(heartbeat.lastLoopAt).toISOString() : "Never"}`);

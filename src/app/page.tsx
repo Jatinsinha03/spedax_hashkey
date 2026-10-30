@@ -50,7 +50,7 @@ export default function LandingPage() {
   const [chatMessages, setChatMessages] = useState<
     Array<{ sender: "bot" | "me"; text: string; card?: { title: string; desc: string; onConfirm: () => void } | null; blocked?: boolean }>
   >([
-    { sender: "bot", text: "Hi, I'm your Risk Kernel agent. Tell me what rules to modify, or pick an example prompt below." },
+    { sender: "bot", text: "Hi, I'm your HashPilot agent. Tell me what rules to modify, or pick an example prompt below." },
   ]);
   const [chatInput, setChatInput] = useState("");
 
@@ -71,7 +71,7 @@ export default function LandingPage() {
   const [regData, setRegData] = useState<Record<string, string>>({});
   const [regInput, setRegInput] = useState("");
   const [regMessages, setRegMessages] = useState<Array<{ sender: "bot" | "me"; text: string; options?: string[] }>>([
-    { sender: "bot", text: "Hey! I'm the Risk Kernel onboarding agent. What should I call you?" },
+    { sender: "bot", text: "Hey! I'm the HashPilot onboarding agent. What should I call you?" },
   ]);
 
   // Waitlist form state
@@ -600,7 +600,7 @@ export default function LandingPage() {
           const sellPool = pA < pB ? "Pool B (0.05%)" : "Pool A (0.3%)";
           const profit = ((gap - 6) / 100).toFixed(2);
           setSpreadFeed((prev) => [
-            `Arbitrage Cycle: Bought USDT ➔ WETH on ${buyPool}, swapped to USDT on ${sellPool}. Net +${profit}% captured by Risk Kernel vault.`,
+            `Arbitrage Cycle: Bought USDT ➔ WETH on ${buyPool}, swapped to USDT on ${sellPool}. Net +${profit}% captured by HashPilot vault.`,
             ...prev.slice(0, 2),
           ]);
         }
@@ -1023,12 +1023,17 @@ export default function LandingPage() {
       <section className="sec dark hero" id="top">
         <canvas id="hb" ref={hbRef} aria-hidden="true" />
         <div className="wrap">
+          <div className="rv mb-4">
+            <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white uppercase inline-block">
+              HashPilot
+            </span>
+          </div>
           <span className="mono tag rv">Built for HashKey Chain Mainnet</span>
-          <h1 className="split">
+          <h1 className="split text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mt-1 mb-4">
             The AI trades. <em>The contract decides.</em>
           </h1>
           <p className="lead rv" style={{ ["--d" as string]: ".3s" }}>
-            Risk Kernel is a personal smart-contract trading vault on HashKey Chain. An autonomous AI agent hunts arbitrage and price spreads on Uniswap V3 (USDT, WHSK, WETH, WBTC) and reports back in plain language. It executes only inside a mandate enforced by the contract. Bad call, prompt injection, or a rogue key: anything out of bounds simply reverts.
+            HashPilot is a personal smart-contract trading vault on HashKey Chain. An autonomous AI agent hunts arbitrage and price spreads on Uniswap V3 (USDT, WHSK, WETH, WBTC) and reports back in plain language. It executes only inside a mandate enforced by the contract. Bad call, prompt injection, or a rogue key: anything out of bounds simply reverts.
           </p>
           <div className="row rv" style={{ ["--d" as string]: ".45s" }}>
             <Link className="btn lg" href="/onboarding">
@@ -1231,7 +1236,7 @@ export default function LandingPage() {
           <span className="mono tag rv">02 / The mandate (interactive)</span>
           <h2 className="split h">Don&apos;t trust us. Try to break it.</h2>
           <p className="lead rv">
-            Set your rules, run the simulated agent, then attack the vault. This runs the exact on-chain checks the Risk Kernel smart contract performs.
+            Set your rules, run the simulated agent, then attack the vault. This runs the exact on-chain checks the HashPilot smart contract performs.
           </p>
           <div className="sim">
             {/* Control Column */}
@@ -1538,7 +1543,7 @@ export default function LandingPage() {
             <div className="hd rv">
               <span>&nbsp;</span>
               <span>Typical AI trading bots</span>
-              <span>Risk Kernel</span>
+              <span>HashPilot</span>
             </div>
             <div className="rv">
               <span>Can the agent withdraw funds?</span>
@@ -1644,9 +1649,9 @@ export default function LandingPage() {
             <div id="dc">
               {activeDocTab === "intro" && (
                 <>
-                  <h3>What is Risk Kernel?</h3>
+                  <h3>What is HashPilot?</h3>
                   <p>
-                    Risk Kernel is a non-custodial trading vault on HashKey Chain. An autonomous AI agent hunts arbitrage and price-spread opportunities across Uniswap V3 pools (USDT, WHSK, WETH, WBTC) and executes them for you, but strictly inside an on-chain <b>mandate</b> enforced by your vault&apos;s smart contract.
+                    HashPilot is a non-custodial trading vault on HashKey Chain. An autonomous AI agent hunts arbitrage and price-spread opportunities across Uniswap V3 pools (USDT, WHSK, WETH, WBTC) and executes them for you, but strictly inside an on-chain <b>mandate</b> enforced by your vault&apos;s smart contract.
                   </p>
                   <h3>Core terms</h3>
                   <ul>
@@ -1683,7 +1688,7 @@ export default function LandingPage() {
                     </button>
                     <pre>
                       <code>
-                        <span className="c"># Risk Kernel Mainnet Preset</span>
+                        <span className="c"># HashPilot Mainnet Preset</span>
                         {"\n"}preset: balanced{"\n"}max_position_usdt: 5.0{"\n"}daily_loss_limit_pct: 5{"\n"}max_slippage_bps: 50{"\n"}allowed_tokens:{"\n"}  - WHSK{"\n"}  - WETH{"\n"}  - WBTC
                       </code>
                     </pre>
@@ -1813,11 +1818,11 @@ export default function LandingPage() {
                   <h3>Frequently Asked Questions</h3>
                   <details>
                     <summary>Can the agent withdraw my funds?</summary>
-                    <p>No. The RiskKernelVault smart contract contains no transfer or withdrawal function callable by the agent address.</p>
+                    <p>No. The HashPilot smart contract contains no transfer or withdrawal function callable by the agent address.</p>
                   </details>
                   <details>
                     <summary>Can I lose money?</summary>
-                    <p>Trading always carries market risk. Risk Kernel guarantees profit-or-revert on arbitrage cycles and caps your daily drawdown with a hard circuit breaker.</p>
+                    <p>Trading always carries market risk. HashPilot guarantees profit-or-revert on arbitrage cycles and caps your daily drawdown with a hard circuit breaker.</p>
                   </details>
                   <details>
                     <summary>Which tokens are supported?</summary>
@@ -1990,10 +1995,10 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="big" aria-hidden="true">
-          RISK KERNEL
+          HASHPILOT
         </div>
         <p className="fine">
-          Trading digital assets involves market risk, including potential loss of principal. Risk Kernel smart contracts enforce mathematical loss floors and programmatic invariants on HashKey Chain. © 2026 Risk Kernel.
+          Trading digital assets involves market risk, including potential loss of principal. HashPilot smart contracts enforce mathematical loss floors and programmatic invariants on HashKey Chain. © 2026 HashPilot.
         </p>
       </footer>
     </div>

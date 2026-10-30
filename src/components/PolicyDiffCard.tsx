@@ -53,7 +53,7 @@ export function PolicyDiffCard({
               )}
             </h3>
             <p className="text-sm text-slate-400 mt-0.5">
-              Directional risk invariant evaluated by Risk Kernel smart contract engine
+              Directional risk invariant evaluated by HashPilot smart contract engine
             </p>
           </div>
         </div>

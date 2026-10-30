@@ -180,7 +180,7 @@ export function evaluatePolicyChange(
       diffs.length === 0
         ? "No changes detected."
         : hasRiskier
-        ? "Includes loosening / riskier changes. By Risk Kernel invariant, this change must be queued in a timelock delay before activation, allowing cancellation anytime."
+        ? "Includes loosening / riskier changes. By HashPilot invariant, this change must be queued in a timelock delay before activation, allowing cancellation anytime."
         : "All proposed modifications strictly tighten safety limits. These apply immediately upon your transaction confirmation.",
   };
 }

@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding Risk Kernel database...");
+  console.log("Seeding HashPilot database...");
 
   const demoUserAddress = "0x71c5970c0c169222c0ad19a7719602c89280a8f4".toLowerCase();
   const demoVaultAddress = "0x82f4219460183e8fa573e04e908658826507c570".toLowerCase();

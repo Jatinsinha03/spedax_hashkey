@@ -165,7 +165,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
   const connectWallet = async () => {
     const ethereum = getInjectedEthereum();
     if (!ethereum) {
-      alert("Please install MetaMask to use Risk Kernel on HashKey Chain.");
+      alert("Please install MetaMask to use HashPilot on HashKey Chain.");
       return;
     }
 

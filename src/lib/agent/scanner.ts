@@ -49,10 +49,9 @@ export class ScannerService {
 
     const candidates: CandidateCycle[] = [];
 
-    // 1. Two-step cycles between same pair with different fee tiers (e.g. USDT -> WHSK [3000] -> USDT [500])
+    // 1. Two-step cycles (both single-pool round trips and cross-fee arbitrage)
     for (let i = 0; i < validPools.length; i++) {
       for (let j = 0; j < validPools.length; j++) {
-        if (i === j) continue;
         const p1 = validPools[i];
         const p2 = validPools[j];
 

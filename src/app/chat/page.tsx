@@ -223,7 +223,7 @@ You can ask me to evaluate market conditions, explain your circuit breaker, or d
   };
 
   return (
-    <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 py-10 flex flex-col h-[calc(100vh-80px)]">
+    <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 pt-28 pb-6 flex flex-col h-[calc(100vh-10px)]">
       {/* Header */}
       <div className="flex items-center justify-between pb-6 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-4">

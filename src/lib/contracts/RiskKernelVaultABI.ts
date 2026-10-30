@@ -624,6 +624,72 @@ export const RISK_KERNEL_VAULT_ABI = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    name: "executeArbitrage",
+    inputs: [
+      {
+        name: "steps",
+        type: "tuple[]",
+        internalType: "struct RiskKernelVault.Step[]",
+        components: [
+          { name: "router", type: "address", internalType: "address" },
+          { name: "kind", type: "uint8", internalType: "enum RiskKernelVault.RouterKind" },
+          { name: "tokenIn", type: "address", internalType: "address" },
+          { name: "tokenOut", type: "address", internalType: "address" },
+          { name: "fee", type: "uint24", internalType: "uint24" },
+        ],
+      },
+      { name: "amountIn", type: "uint256", internalType: "uint256" },
+      { name: "minProfit", type: "uint256", internalType: "uint256" },
+      { name: "deadline", type: "uint64", internalType: "uint64" },
+      {
+        name: "approval",
+        type: "tuple",
+        internalType: "struct RiskKernelVault.Approval",
+        components: [
+          { name: "expiry", type: "uint64", internalType: "uint64" },
+          { name: "nonce", type: "uint64", internalType: "uint64" },
+          { name: "signature", type: "bytes", internalType: "bytes" },
+        ],
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "executeCycle",
+    inputs: [
+      {
+        name: "steps",
+        type: "tuple[]",
+        internalType: "struct RiskKernelVault.Step[]",
+        components: [
+          { name: "router", type: "address", internalType: "address" },
+          { name: "kind", type: "uint8", internalType: "enum RiskKernelVault.RouterKind" },
+          { name: "tokenIn", type: "address", internalType: "address" },
+          { name: "tokenOut", type: "address", internalType: "address" },
+          { name: "fee", type: "uint24", internalType: "uint24" },
+        ],
+      },
+      { name: "amountIn", type: "uint256", internalType: "uint256" },
+      { name: "minReturn", type: "uint256", internalType: "uint256" },
+      { name: "deadline", type: "uint64", internalType: "uint64" },
+      {
+        name: "approval",
+        type: "tuple",
+        internalType: "struct RiskKernelVault.Approval",
+        components: [
+          { name: "expiry", type: "uint64", internalType: "uint64" },
+          { name: "nonce", type: "uint64", internalType: "uint64" },
+          { name: "signature", type: "bytes", internalType: "bytes" },
+        ],
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
 ] as const;
 
 export const ERC20_ABI = [

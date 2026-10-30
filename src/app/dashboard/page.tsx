@@ -117,7 +117,7 @@ export default function DashboardPage() {
   const volumeProgress = Math.min(100, (dailyVolume / maxVolume) * 100);
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-10 space-y-10">
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 pt-28 pb-16 space-y-10">
       {/* Top Banner / Key Metrics */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
         <div>

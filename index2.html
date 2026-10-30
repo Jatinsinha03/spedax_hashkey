@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="SpedaxAI is a personal trading vault on HashKey Chain. An AI agent trades on HSKSwap inside a mandate enforced by a smart contract.">
+<meta name="theme-color" content="#000000">
+<title>SpedaxAI | The AI trades. The contract decides.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--pu:#7c3aed;--pu2:#5b21b6;--pl:#a78bfa;--k1:#0b0b10;--k2:#15151d;--cb:#0b0e11;--cl:#1e2329;--ln:rgba(255,255,255,.12);--up:#0ecb81;--dn:#f6465d;--gy:#848e9c;--mut:#a1a1b5;--ink:#0a0a0f}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:#000;color:#fff;font:400 17px/1.55 Inter,system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit}
+::selection{background:var(--pu);color:#fff}
+:focus-visible{outline:2px solid var(--pl);outline-offset:3px}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:.78rem}
+.up{color:var(--up)}.dn{color:var(--dn)}.pl{color:var(--pl)}.dim{color:var(--mut)}
+[data-motion=off] *,[data-motion=off] *::before,[data-motion=off] *::after{animation:none!important;transition:none!important}
+
+/* type */
+h1,h2,h3{font-weight:800;letter-spacing:-.055em;line-height:.98;word-spacing:-.05em;text-wrap:balance}
+h1{font-size:clamp(3rem,8.4vw,8.5rem);line-height:.94}
+.h{font-size:clamp(2.6rem,6.6vw,6.2rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.3rem);color:rgba(255,255,255,.76);max-width:640px;margin:28px 0 36px;line-height:1.5;letter-spacing:-.01em}
+.light .lead{color:#4b4b5a}.purple .lead{color:rgba(255,255,255,.85)}
+.tag{display:inline-block;color:var(--pl);letter-spacing:.14em;margin-bottom:24px;text-transform:uppercase}
+.light .tag{color:var(--pu)}.purple .tag{color:#ddd6fe}
+.split em{font-style:normal;color:var(--pl)}.light .split em{color:var(--pu)}.purple .split em{color:#ddd6fe}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .05em .14em 0;margin:0 -.05em -.14em 0}
+.split .w>span{display:inline-block;transform:translateY(112%);transition:transform 1s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i)*55ms + 80ms)}
+.split.vis .w>span{transform:none}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.rv.vis{opacity:1;transform:none}
+
+/* layout */
+.sec{position:relative;padding:clamp(80px,12vw,160px) 0;overflow:hidden;overflow:clip}
+.dark{background:#000;color:#fff}.light{background:#fff;color:var(--ink)}.purple{background:var(--pu2);color:#fff}
+.wrap{position:relative;z-index:1;max-width:1320px;margin:auto;padding:0 clamp(20px,5vw,64px)}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.two{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(28px,5vw,72px);align-items:start}
+.dots{background-image:radial-gradient(#ddd6f3 1px,transparent 1px);background-size:26px 26px}
+
+/* progress, glow */
+#pg{position:fixed;top:0;left:0;right:0;height:3px;background:var(--pl);transform-origin:0 50%;transform:scaleX(0);z-index:80}
+#glow{position:fixed;left:0;top:0;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.22),transparent 62%);pointer-events:none;z-index:40;mix-blend-mode:screen;opacity:0;transition:opacity .4s;will-change:transform}
+@media(hover:none){#glow{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--pu);cursor:pointer;font-weight:600;font-size:1rem;letter-spacing:-.01em;padding:15px 28px;border-radius:99px;background:var(--pu);color:#fff;transition:transform .25s,box-shadow .25s,background .25s,border-color .25s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px -12px var(--pu);background:#8b4cf7}
+.btn.lg{padding:20px 38px;font-size:1.12rem}
+.btn.s{padding:10px 18px;font-size:.88rem}
+.btn.k{background:#000;border-color:rgba(255,255,255,.55);color:#fff}
+.btn.k:hover{background:#101014;border-color:#fff;box-shadow:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* nav */
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:70;width:min(1100px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:8px 8px 8px 22px;border:1px solid rgba(255,255,255,.14);border-radius:99px;background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.lg{display:flex;align-items:center;gap:14px;font-weight:800;font-size:1.15rem;letter-spacing:-.04em;margin-right:auto}
+.mk{width:20px;height:20px;border:2px solid #fff;border-radius:6px;position:relative;margin-right:4px}
+.mk::after{content:"";position:absolute;left:calc(100% + 5px);top:-3px;width:3px;height:22px;background:var(--pl);border-radius:2px}
+.links{display:flex;gap:2px}
+.links a{padding:9px 14px;border-radius:99px;font-size:.92rem;font-weight:500;color:rgba(255,255,255,.72);transition:.2s}
+.links a:hover,.links a.act{color:#fff;background:rgba(255,255,255,.09)}
+.burger{display:none;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;cursor:pointer}
+.burger i{display:block;width:16px;height:2px;background:#fff;margin:auto;box-shadow:0 5px #fff,0 -5px #fff}
+
+/* hero */
+.hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:150px 0 130px}
+#hb{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero .wrap{width:100%}
+.hstat{position:absolute;z-index:1;bottom:56px;left:78%;transform:translateX(calc(-100% - 22px));text-align:right;color:#9a9aae;line-height:1.6}
+.hstat b{font-weight:500;color:#fff}
+.cue{position:absolute;z-index:1;left:50%;bottom:20px;width:50px;height:9px;margin-left:-25px;border:1px solid rgba(255,255,255,.4);border-radius:99px}
+.stats{display:flex;gap:clamp(24px,5vw,64px);margin-top:60px;flex-wrap:wrap}
+.stats b{display:block;font-size:clamp(2rem,3.4vw,3rem);font-weight:800;letter-spacing:-.05em;line-height:1}
+.stats i{font-style:normal}
+.stats>div>span{display:block;font-size:.85rem;color:var(--mut);max-width:170px;line-height:1.35;margin-top:8px}
+
+/* marquee */
+.mq{background:var(--pu);color:#fff;overflow:hidden;padding:22px 0;white-space:nowrap}
+.mqi{display:inline-block;animation:mq 40s linear infinite;font-weight:800;font-size:clamp(1.3rem,2.4vw,2rem);letter-spacing:-.03em;text-transform:uppercase}
+.mqi b{margin:0 26px;color:#000}
+.mq:hover .mqi{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* market terminal */
+.term{margin-top:48px;background:var(--cb);border:1px solid var(--cl);border-radius:24px;overflow:hidden}
+.th{display:flex;flex-wrap:wrap;align-items:center;gap:14px 36px;padding:20px 24px;border-bottom:1px solid var(--cl)}
+.pair b{display:block;font-size:1.35rem;font-weight:700;letter-spacing:-.03em}
+.price b{font-size:2rem;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin-right:8px}
+.kv{display:flex;flex-direction:column}.kv span{font-size:.72rem;color:var(--gy)}.kv b{font:500 .9rem 'JetBrains Mono',monospace;color:#eaecef}
+.tf{margin-left:auto;display:flex;gap:6px}
+.tfoot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 24px;border-top:1px solid var(--cl);color:var(--gy)}
+#c1{width:100%;height:clamp(300px,42vw,480px);display:block;cursor:crosshair;touch-action:pan-y}
+.chip{font:500 .78rem 'JetBrains Mono',monospace;padding:8px 14px;border-radius:99px;border:1px solid var(--ln);background:transparent;color:var(--mut);cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--pl);color:#fff}.chip.on{background:var(--pu);border-color:var(--pu);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+
+/* cards */
+.card{position:relative;border:1px solid var(--ln);background:var(--k1);color:#fff;border-radius:28px;padding:clamp(20px,2.4vw,32px);overflow:hidden}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:.4s;background:radial-gradient(340px at var(--mx,50%) var(--my,50%),rgba(124,58,237,.22),transparent 70%)}
+.card:hover::before{opacity:1}
+.card h3{font-size:1.5rem}
+
+/* how it works */
+.how{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,5vw,72px);margin-top:56px;align-items:start}
+.step{padding:30px 0;border-top:1px solid #e4e0f0}
+.step:last-child{border-bottom:1px solid #e4e0f0}
+.step .mono{color:#7a7a8c}
+.step h3{font-size:clamp(1.8rem,3.2vw,2.8rem);color:var(--pu);margin:10px 0 12px;transition:transform .35s}
+.step:hover h3{transform:translateX(10px)}
+.step p{color:#52525f;max-width:520px}
+.dia{background:#000;border-radius:28px;padding:28px;position:sticky;top:100px}
+.dia svg text{font:500 11px 'JetBrains Mono',monospace;fill:#fff}
+.dia .n{fill:#0b0b10;stroke:#2a2a38}.dia .v{fill:rgba(124,58,237,.22);stroke:#8b5cf6}
+.fl{fill:none;stroke:#8b5cf6;stroke-width:2;stroke-dasharray:6 8;animation:fl 1s linear infinite}.fl.w{stroke:#fff;opacity:.6;animation-duration:1.8s}
+@keyframes fl{to{stroke-dashoffset:-14}}
+.gate{animation:blink 2.4s infinite}@keyframes blink{50%{opacity:.25}}
+
+/* mandate sim */
+.pgrid::before{content:"";position:absolute;left:0;right:0;top:-64px;bottom:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:64px 64px;animation:gm 5s linear infinite;pointer-events:none}
+.pgrid::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,var(--pu2) 96%);pointer-events:none}
+@keyframes gm{to{transform:translateY(64px)}}
+.sim{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:22px;margin-top:48px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ctl label{display:flex;justify-content:space-between;margin:20px 0 6px;font-size:.95rem}
+.ctl label b{font:500 .8rem 'JetBrains Mono',monospace;color:var(--pl)}
+input[type=range]{width:100%;accent-color:var(--pu)}
+#bal{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.05em;line-height:1.1}
+.pill{padding:6px 14px;border-radius:99px;border:1px solid var(--pl);color:var(--pl);font:500 .72rem 'JetBrains Mono',monospace}
+.pill.fz{background:var(--dn);border-color:var(--dn);color:#fff;animation:blink 1.2s infinite}
+.cbox{background:var(--cb);border:1px solid var(--cl);border-radius:16px;overflow:hidden;margin:18px 0}
+#c3{width:100%;height:230px;display:block}
+.mrow{display:flex;justify-content:space-between;margin-bottom:8px}
+.meter{position:relative;height:8px;border-radius:9px;overflow:hidden;background:linear-gradient(90deg,var(--up),#f0b90b,var(--dn));margin-bottom:20px}
+.meter i{position:absolute;right:0;top:0;bottom:0;width:100%;background:var(--k2);transition:width .5s}
+.log{height:230px;overflow:auto;margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.log div{animation:pop .4s;font-size:.78rem;line-height:1.5}
+.log b{padding:2px 8px;border-radius:6px;margin-right:8px;font-weight:600}
+.log .x b{background:var(--up);color:#000}.log .r b{border:1px solid var(--dn);color:var(--dn)}.log .f b{background:var(--dn);color:#fff}.log .o b{background:var(--pu);color:#fff}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+
+/* chat */
+.blob::before{content:"";position:absolute;width:60vmax;height:60vmax;left:-20vmax;top:-10vmax;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.38),transparent 65%);filter:blur(60px);animation:drift 26s ease-in-out infinite alternate;will-change:transform;pointer-events:none}
+@keyframes drift{to{transform:translate(18vmax,10vmax) scale(1.15)}}
+.msgs{height:340px;overflow:auto;padding-right:6px}
+.m{max-width:88%;padding:11px 16px;border-radius:18px;margin:8px 0;white-space:pre-line;font-size:.95rem;animation:pop .4s;width:fit-content}
+.bot{background:var(--k2);border:1px solid var(--ln)}.me{background:var(--pu);margin-left:auto}
+.typ{display:flex;gap:5px;padding:15px 16px}.typ i{width:7px;height:7px;border-radius:50%;background:var(--mut);animation:bn 1s infinite}
+.typ i:nth-child(2){animation-delay:.15s}.typ i:nth-child(3){animation-delay:.3s}
+@keyframes bn{50%{transform:translateY(-5px);opacity:.5}}
+.rc{border:1px dashed var(--pl);border-radius:16px;padding:14px;margin:8px 0;background:rgba(124,58,237,.1);animation:pop .4s}
+.rc.x{border-color:var(--dn);background:rgba(246,70,93,.08)}
+.rc p{font-size:.9rem;margin:6px 0 12px}
+.frm{display:flex;gap:8px;margin-top:14px}
+input[type=text],input[type=email]{flex:1;min-width:0;padding:14px 20px;border-radius:99px;border:1px solid var(--ln);background:rgba(255,255,255,.05);color:#fff;outline:0}
+input[type=text]:focus,input[type=email]:focus{border-color:var(--pl)}
+input::placeholder{color:#7d7d92}
+
+/* spread */
+.chartcard{background:var(--cb);border:1px solid var(--cl);border-radius:24px;padding:20px;color:#eaecef}
+.hh2{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;color:var(--gy)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}.dot.w{background:#eaecef}.dot.y{background:#f0b90b;margin-left:14px}
+#c2{width:100%;height:340px;display:block}
+.feed{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.feed div{padding:16px 18px;border-left:3px solid var(--pu);background:#f4f1fd;border-radius:0 14px 14px 0;font-size:.95rem;color:#2a2a35;animation:pop .5s}
+
+/* why */
+.cmp{margin-top:56px;border-top:1px solid var(--ln)}
+.cmp>div{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:24px;padding:26px 0;border-bottom:1px solid var(--ln);align-items:baseline}
+.cmp span:first-child{font-size:1.25rem;font-weight:700;letter-spacing:-.03em}
+.cmp span:nth-child(2){color:var(--mut)}.cmp span:nth-child(2)::before{content:"✕  ";color:var(--dn);font-weight:700}
+.cmp span:nth-child(3){color:#fff;font-weight:600}.cmp span:nth-child(3)::before{content:"✓  ";color:var(--pl)}
+.cmp .hd{padding:18px 0}.cmp .hd span{font:500 .75rem 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.cmp .hd span:last-child{color:var(--pl)}.cmp .hd span::before{content:none!important}
+.mani{margin-top:110px;font-size:clamp(2rem,5.6vw,5.2rem);font-weight:800;letter-spacing:-.05em;line-height:1;max-width:1100px}
+.mani span{color:#2e2e3a;transition:color .4s}.mani span.lit{color:#fff}.mani span.pp.lit{color:var(--pl)}
+
+/* hashkey */
+.chainbox{margin-top:48px;border:1px solid rgba(255,255,255,.2);border-radius:24px;background:rgba(0,0,0,.22);overflow:hidden;position:relative}
+.chainbox .mono{position:absolute;left:20px;top:14px;color:rgba(255,255,255,.7);z-index:1}
+#c4{width:100%;height:190px;display:block}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}
+.g4 .mono{color:var(--pl)}.g4 h3{margin:16px 0 10px}.g4 p{color:var(--mut);font-size:.95rem}
+
+/* docs */
+.docs{display:grid;grid-template-columns:260px 1fr;gap:clamp(20px,4vw,56px);margin-top:48px;align-items:start}
+#dn{display:flex;flex-direction:column;border-top:1px solid #e4e0f0}
+#dn button{display:flex;justify-content:space-between;text-align:left;padding:16px 4px;border:0;border-bottom:1px solid #e4e0f0;background:none;color:#6b6b7b;font-weight:600;font-size:1.02rem;letter-spacing:-.02em;cursor:pointer;transition:.25s}
+#dn button:hover{color:var(--ink);padding-left:10px}#dn button.on{color:var(--pu);padding-left:10px}#dn button.on::after{content:"→"}
+#dc{background:#f7f5fd;border:1px solid #e8e3f7;border-radius:28px;padding:clamp(22px,3vw,40px);min-height:440px;color:var(--ink)}
+#dc.fade{animation:pop .5s}
+#dc h3{font-size:1.6rem;margin:26px 0 12px}#dc h3:first-child{margin-top:0}
+#dc p,#dc li{color:#4b4b5a;margin-bottom:10px}#dc ul,#dc ol{padding-left:22px}#dc b{color:var(--ink)}
+#dc table{width:100%;border-collapse:collapse;font-size:.92rem;margin:10px 0 16px}
+#dc td,#dc th{text-align:left;padding:11px 10px;border-bottom:1px solid #e4e0f0;color:#3f3f4b;vertical-align:top}
+#dc th{color:var(--pu);font:500 .72rem 'JetBrains Mono',monospace;letter-spacing:.08em}
+#dc code{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--pu)}
+.code{position:relative;background:#000;border-radius:16px;padding:22px;margin:14px 0 18px;overflow:auto}
+.code pre{font:500 .8rem/1.75 'JetBrains Mono',monospace;color:#fff;white-space:pre}
+#dc .code code{color:#fff;font-size:.8rem}.code .c{color:var(--pl)}
+.copy{position:absolute;right:12px;top:12px;border:0;border-radius:99px;background:var(--pu);color:#fff;font-weight:600;font-size:.78rem;padding:7px 14px;cursor:pointer}
+.copy:hover{background:#8b4cf7}
+details{border-bottom:1px solid #e4e0f0;padding:14px 0}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--pu);font-size:1.3rem;line-height:1;transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:10px}
+
+/* join */
+.checks{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.checks li{display:flex;gap:12px;color:rgba(255,255,255,.85)}.checks li::before{content:"✓";color:var(--pl);font-weight:700}
+.prog{height:3px;background:var(--ln);border-radius:9px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;width:0;background:var(--pu);transition:width .5s}
+
+/* footer */
+footer{position:relative;background:var(--pu2);padding:clamp(70px,10vw,130px) 0 0;overflow:hidden}
+.cta{font-size:clamp(2.4rem,6.4vw,6rem);font-weight:800;letter-spacing:-.055em;line-height:.96;max-width:1000px;text-wrap:balance}
+.cta em{font-style:normal;color:#ddd6fe}
+.wl{display:flex;gap:8px;max-width:560px;margin-top:40px;background:#fff;border-radius:99px;padding:6px}
+.wl:focus-within{box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+.wl input{background:none;color:var(--ink);border:0;padding:12px 18px;flex:1;min-width:0;border-radius:99px}
+.wl input::placeholder{color:#8a8a9a}
+.wl .btn{background:#000;border-color:#000}
+.fg{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-top:70px}
+.fg>div{display:flex;flex-direction:column;gap:10px}.fg a{color:rgba(255,255,255,.78);font-size:.95rem}.fg a:hover{color:#fff}
+.fg .mono{color:#ddd6fe;letter-spacing:.1em}
+.sw{position:relative;display:flex;align-items:center;gap:12px;cursor:pointer;font-size:.92rem;color:rgba(255,255,255,.85)}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw i{width:44px;height:24px;border-radius:99px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);position:relative;transition:.3s;flex:none}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s}
+.sw input:checked+i{background:#000;border-color:#000}.sw input:checked+i::after{left:23px}
+.sw input:focus-visible+i{outline:2px solid #fff;outline-offset:2px}
+.big{font-size:18vw;font-weight:800;letter-spacing:-.06em;line-height:.86;text-align:center;white-space:nowrap;margin-top:80px;background:linear-gradient(100deg,rgba(255,255,255,.14) 20%,#fff 45%,#fff 55%,rgba(255,255,255,.14) 80%) 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 8s linear infinite;user-select:none}
+@keyframes sh{to{background-position:-250% 0}}
+.fine{color:rgba(255,255,255,.7);font-size:.8rem;max-width:760px;margin:26px auto 0;text-align:center;padding:0 24px 34px}
+
+@media(max-width:900px){
+ .links{display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;flex-direction:column;background:rgba(0,0,0,.94);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:10px}
+ .links a{padding:14px 16px}nav.open .links{display:flex}.burger{display:block}
+ .two,.how,.sim,.docs{grid-template-columns:1fr}.dia{position:static}
+ .g4{grid-template-columns:1fr 1fr}
+ .cmp>div{grid-template-columns:1fr;gap:6px}.cmp .hd{display:none}
+ #dn{flex-direction:row;flex-wrap:wrap;border:0;gap:6px}#dn button{border:1px solid #e4e0f0;border-radius:99px;padding:10px 16px}#dn button.on::after{content:none}#dn button:hover,#dn button.on{padding-left:16px}
+ .tf{margin-left:0}
+ .hstat{left:20px;transform:none;text-align:left;bottom:50px}
+}
+@media(max-width:560px){.g4{grid-template-columns:1fr}nav .btn.s{padding:9px 14px;font-size:.8rem}.btn.lg{padding:17px 28px}}
+</style>
+</head>
+<body>
+<div id="pg"></div><div id="glow"></div>
+
+<nav id="nav">
+  <a class="lg" href="#top"><i class="mk"></i>SpedaxAI</a>
+  <div class="links"><a href="#how">How it works</a><a href="#sim">Mandate</a><a href="#why">Why us</a><a href="#hashkey">HashKey</a><a href="#docs">Docs</a></div>
+  <a class="btn s" href="#join">Get early access</a>
+  <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"><i></i></button>
+</nav>
+
+<main>
+<!-- HERO: black, trade blocks crossing the mandate line -->
+<section class="sec dark hero" id="top">
+  <canvas id="hb" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <span class="mono tag rv">Built for HashKey Chain mainnet</span>
+    <h1 class="split">The AI trades. <em>The contract decides.</em></h1>
+    <p class="lead rv" style="--d:.3s">SpedaxAI is a personal trading vault on HashKey Chain. An AI agent hunts arbitrage and price spreads on HSKSwap and reports back in plain language. It only acts inside a mandate enforced by a smart contract. Bad call, prompt injection or a hacked backend: anything out of bounds simply reverts.</p>
+    <div class="row rv" style="--d:.45s"><a class="btn lg" href="#join">Create my vault</a><a class="btn lg k" href="#sim">Try to break the mandate</a></div>
+    <div class="stats rv" style="--d:.6s">
+      <div><b><i data-n="100">0</i>%</b><span>of agent actions checked by the contract</span></div>
+      <div><b>0</b><span>keys that let the AI withdraw your funds</span></div>
+      <div><b><i data-n="3">0</i></b><span>layers: mandate, circuit breaker, owner-only exits</span></div>
+    </div>
+  </div>
+  <div class="hstat mono" aria-hidden="true">no mandate, no trade<br><span class="pl">approved <b id="nA">0</b></span><br>reverted <b id="nR">0</b></div>
+  <span class="cue" aria-hidden="true"></span>
+</section>
+
+<div class="mq" aria-hidden="true"><div class="mqi"><span>Non-custodial agent</span><b>◆</b><span>Mandate enforced on-chain</span><b>◆</b><span>HashKey Chain</span><b>◆</b><span>HSKSwap arbitrage</span><b>◆</b><span>Circuit breaker</span><b>◆</b><span>Plain-language reports</span><b>◆</b></div></div>
+
+<!-- LIVE MARKET: black, candlestick terminal -->
+<section class="sec dark" id="market">
+  <div class="wrap">
+    <span class="mono tag rv">Live market feed (simulated)</span>
+    <h2 class="split h">The agent watches every tick.</h2>
+    <div class="term rv">
+      <div class="th">
+        <div class="pair"><b>HSK/USDC</b><span class="mono dim">HSKSwap on HashKey Chain</span></div>
+        <div class="price"><b id="px" class="up">0.4120</b><span id="pch" class="mono up">+0.00%</span></div>
+        <div class="kv"><span>Session high</span><b id="hh">0.0000</b></div>
+        <div class="kv"><span>Session low</span><b id="ll">0.0000</b></div>
+        <div class="kv"><span>Volume (sim)</span><b id="vv">0.00M</b></div>
+        <div class="tf" id="tf" role="group" aria-label="Timeframe"></div>
+      </div>
+      <canvas id="c1" role="img" aria-label="Simulated live candlestick chart"></canvas>
+      <div class="tfoot mono"><span>Agent: scanning pools</span><span>Hover the chart for a crosshair</span><span>Mandate locked on-chain</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW: white -->
+<section class="sec light" id="how">
+  <div class="wrap">
+    <span class="mono tag rv">01 / How it works</span>
+    <h2 class="split h">An agent with a leash made of code.</h2>
+    <div class="how">
+      <div>
+        <div class="step rv"><span class="mono">01</span><h3>Create your vault</h3><p>A personal smart-contract vault, owned by your wallet. Fund it with the assets you choose. Only you can withdraw.</p></div>
+        <div class="step rv"><span class="mono">02</span><h3>Set the mandate</h3><p>Max trade size, daily loss limit, slippage cap and allowed pairs. They live in the contract, not in a database.</p></div>
+        <div class="step rv"><span class="mono">03</span><h3>The agent hunts spreads</h3><p>It scans HSKSwap for arbitrage and price gaps and proposes swaps. The vault approves each one or reverts it.</p></div>
+        <div class="step rv"><span class="mono">04</span><h3>Reports in plain language</h3><p>“I bought 1,200 HSK on Pool A, sold on Pool B, net +0.4%.” Talk to it by text or voice. Chat can propose rules, but it can never move money.</p></div>
+      </div>
+      <div class="dia rv">
+        <svg viewBox="0 0 400 380" width="100%" role="img" aria-label="Architecture: the owner sets rules in the mandate vault, the AI agent can only propose swaps, and the vault sends approved swaps to HSKSwap.">
+          <rect class="n" x="14" y="16" width="130" height="54" rx="14"/><text x="79" y="40" text-anchor="middle">YOU</text><text x="79" y="57" text-anchor="middle" opacity=".6">owner wallet</text>
+          <rect class="n" x="256" y="16" width="130" height="54" rx="14"/><text x="321" y="40" text-anchor="middle">AI AGENT</text><text x="321" y="57" text-anchor="middle" opacity=".6">trade-only key</text>
+          <rect class="v" x="90" y="160" width="220" height="86" rx="18"/><text x="200" y="198" text-anchor="middle" style="font-weight:600">MANDATE VAULT</text><text x="200" y="218" text-anchor="middle" opacity=".6">smart contract · HashKey Chain</text>
+          <rect class="n" x="120" y="316" width="160" height="50" rx="14"/><text x="200" y="346" text-anchor="middle">HSKSwap</text>
+          <path class="fl" d="M79 70 L150 160"/><path class="fl w" d="M321 70 L250 160"/><path class="fl" d="M200 246 L200 316"/>
+          <circle r="4" fill="#fff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M321 70 L250 160"/></circle>
+          <circle r="4" fill="#a78bfa"><animateMotion dur="1.8s" repeatCount="indefinite" path="M200 246 L200 316"/></circle>
+          <circle class="gate" cx="285" cy="115" r="13" fill="#000" stroke="#f6465d"/><text class="gate" x="285" y="119" text-anchor="middle" style="fill:#f6465d">✕</text>
+          <text x="30" y="125" opacity=".6">rules · exits</text><text x="212" y="288" opacity=".6">approved swaps only</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MANDATE SIM: purple -->
+<section class="sec purple pgrid" id="sim">
+  <div class="wrap">
+    <span class="mono tag rv">02 / The mandate (interactive)</span>
+    <h2 class="split h">Don't trust us. Try to break it.</h2>
+    <p class="lead rv">Set your rules, run the simulated agent, then attack the vault. This runs the same kind of checks the contract performs, shown here with demo money.</p>
+    <div class="sim">
+      <div class="card ctl rv">
+        <div class="top"><h3>Your mandate</h3><span class="mono pl">ON-CHAIN</span></div>
+        <div class="chips" id="pre"></div>
+        <label>Max per trade <b id="vA">10%</b></label><input type="range" id="mT" min="1" max="50" value="10" aria-label="Max per trade">
+        <label>Daily loss limit <b id="vB">5%</b></label><input type="range" id="mL" min="1" max="20" value="5" aria-label="Daily loss limit">
+        <label>Max slippage <b id="vC">50 bps</b></label><input type="range" id="mS" min="10" max="300" step="10" value="50" aria-label="Max slippage">
+        <label>Allowed pairs</label><div class="chips" id="pairs"></div>
+        <p class="mono dim">Tip: set the loss limit to 1% and run the agent to trip the circuit breaker.</p>
+      </div>
+      <div class="card rv" style="--d:.1s">
+        <div class="top"><div><span class="mono dim">VAULT BALANCE (DEMO)</span><div id="bal">$10,000.00</div><span class="mono dim" id="pnl">+0.00% since baseline</span></div><span class="pill" id="st">ACTIVE</span></div>
+        <div class="cbox"><canvas id="c3" role="img" aria-label="Simulated vault equity chart with loss limit"></canvas></div>
+        <div class="mrow mono"><span class="dim">LOSS LIMIT USED</span><b id="mp">0%</b></div>
+        <div class="meter"><i id="mb"></i></div>
+        <div class="row">
+          <button class="btn s" id="bA" type="button">▶ Run agent</button>
+          <button class="btn s k" id="r1" type="button">Rogue: drain vault</button>
+          <button class="btn s k" id="r2" type="button">Rogue: 90% trade</button>
+          <button class="btn s k" id="r3" type="button">Rogue: unlisted token</button>
+          <button class="btn s" id="bU" type="button" hidden>Owner: unfreeze</button>
+        </div>
+        <div class="log mono" id="log" role="log" aria-live="polite"><div class="o"><b>READY</b>Vault deployed. Mandate loaded.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT: black -->
+<section class="sec dark blob" id="chat">
+  <div class="wrap two">
+    <div>
+      <span class="mono tag rv">03 / Talk to it</span>
+      <h2 class="split h" style="font-size:clamp(2.4rem,5vw,4.8rem)">Conversation proposes. You confirm.</h2>
+      <p class="lead rv">Text or voice, the agent can only turn your words into a rule-change card. Nothing changes until you confirm, and no message can ever move funds. Confirm a card and watch the mandate above update.</p>
+    </div>
+    <div class="card rv">
+      <div class="msgs" id="cm"><div class="m bot">Hi, I'm your Spedax agent. Tell me what to change, or tap an example.</div></div>
+      <div class="chips" id="cp"></div>
+      <form class="frm" id="cf"><input type="text" id="ci" placeholder="Try: cap my daily loss at 2%" autocomplete="off" aria-label="Message the agent"><button class="btn s">Send</button></form>
+    </div>
+  </div>
+</section>
+
+<!-- SPREAD: white -->
+<section class="sec light dots" id="spread">
+  <div class="wrap">
+    <span class="mono tag rv">04 / Spread hunting</span>
+    <h2 class="split h">Where two pools disagree, the agent listens.</h2>
+    <div class="two" style="margin-top:56px">
+      <div>
+        <p class="lead rv" style="margin-top:0">The white line is Pool A and the yellow line is Pool B. When the gap clears fees plus your slippage cap, the agent proposes a trade, and the vault checks it against your mandate before anything executes.</p>
+        <div class="feed" id="feed"><div id="fph">Waiting for the next spread...</div></div>
+      </div>
+      <div class="chartcard rv">
+        <div class="hh2"><span class="mono"><i class="dot w"></i>Pool A<i class="dot y"></i>Pool B</span><span class="mono">Spread <b id="spd" class="up">0 bps</b></span></div>
+        <canvas id="c2" role="img" aria-label="Simulated two-pool price chart with arbitrage windows highlighted"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY: black -->
+<section class="sec dark" id="why">
+  <div class="wrap">
+    <span class="mono tag rv">05 / Why choose us</span>
+    <h2 class="split h">One of a kind: trust made optional.</h2>
+    <div class="cmp">
+      <div class="hd rv"><span>&nbsp;</span><span>Typical AI trading bots</span><span>SpedaxAI</span></div>
+      <div class="rv"><span>Can the agent withdraw funds?</span><span>Often, via hot wallets or API keys</span><span>Never. The contract has no agent exit.</span></div>
+      <div class="rv"><span>Who enforces the rules?</span><span>Backend code or the AI prompt</span><span>A smart contract on HashKey Chain</span></div>
+      <div class="rv"><span>AI error or prompt injection</span><span>The bad trade can go through</span><span>Out-of-mandate actions revert</span></div>
+      <div class="rv"><span>Backend compromised</span><span>Funds exposed</span><span>The attacker stays inside the same mandate</span></div>
+      <div class="rv"><span>Loss protection</span><span>Soft alerts, manual stop</span><span>Hard on-chain freeze at your limit</span></div>
+      <div class="rv"><span>Chat commands</span><span>May act directly</span><span>Only produce cards you confirm</span></div>
+    </div>
+    <p class="mani" id="mani">Other bots ask you to trust the AI. We made trust unnecessary.</p>
+  </div>
+</section>
+
+<!-- HASHKEY: purple -->
+<section class="sec purple" id="hashkey">
+  <div class="wrap">
+    <span class="mono tag rv">06 / Why HashKey Chain</span>
+    <h2 class="split h">The right chain for a bounded agent.</h2>
+    <div class="chainbox rv"><span class="mono">ILLUSTRATIVE BLOCK STREAM</span><canvas id="c4" aria-hidden="true"></canvas></div>
+    <div class="g4">
+      <div class="card rv"><span class="mono">01</span><h3>EVM-native</h3><p>Solidity vaults, familiar wallets and tooling. The mandate is readable, auditable contract code.</p></div>
+      <div class="card rv" style="--d:.08s"><span class="mono">02</span><h3>Compliance-minded ecosystem</h3><p>Backed by HashKey Group, known for regulated digital-asset services. A fit for users who value guardrails.</p></div>
+      <div class="card rv" style="--d:.16s"><span class="mono">03</span><h3>Built for frequent trades</h3><p>Spread capture lives or dies on fees and speed. An L2 design keeps small, repeated trades practical.</p></div>
+      <div class="card rv" style="--d:.24s"><span class="mono">04</span><h3>Liquidity at home</h3><p>HSKSwap lives on the same chain as the vault. Checks and trades happen together, with no bridge in the path.</p></div>
+    </div>
+    <p class="mono rv" style="margin-top:20px;color:rgba(255,255,255,.75)">Verify current network specs in the official HashKey Chain documentation.</p>
+  </div>
+</section>
+
+<!-- DOCS: white -->
+<section class="sec light" id="docs">
+  <div class="wrap">
+    <span class="mono tag rv">07 / Documentation</span>
+    <h2 class="split h">Docs, straight to the point.</h2>
+    <div class="docs rv"><div id="dn"></div><div id="dc"></div></div>
+  </div>
+</section>
+
+<!-- JOIN: black -->
+<section class="sec dark" id="join">
+  <div class="wrap two">
+    <div>
+      <span class="mono tag rv">08 / Early access</span>
+      <h2 class="split h" style="font-size:clamp(2.4rem,5vw,4.8rem)">Meet the registration agent.</h2>
+      <p class="lead rv">No endless forms. Answer five quick questions and the onboarding agent prepares your vault invite.</p>
+      <ul class="checks rv"><li>We never ask for a private key or seed phrase</li><li>Your owner wallet stays yours</li><li>Five questions, under a minute</li></ul>
+    </div>
+    <div class="card rv">
+      <div class="prog"><i id="rp"></i></div>
+      <div class="msgs" id="rm"></div><div class="chips" id="ro"></div>
+      <form class="frm" id="rf"><input type="text" id="rin" placeholder="Type your answer..." autocomplete="off" aria-label="Your answer"><button class="btn s">Send</button></form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cta">Put a leash on your agent. <em>Not on your upside.</em></div>
+    <form class="wl" id="ff"><input type="email" id="fe" placeholder="you@email.com" required aria-label="Email address"><button class="btn">Join the waitlist</button></form>
+    <p class="mono" id="fm" style="margin-top:12px"></p>
+    <div class="fg">
+      <div><span class="mono">PRODUCT</span><a href="#how">How it works</a><a href="#sim">Mandate demo</a><a href="#docs">Docs</a></div>
+      <div><span class="mono">WHY</span><a href="#why">Why choose us</a><a href="#hashkey">Why HashKey</a><a href="#join">Register</a></div>
+      <div><span class="mono">SETTINGS</span>
+        <label class="sw"><input type="checkbox" id="swM" checked><i></i>Animations</label>
+        <label class="sw"><input type="checkbox" id="swF" checked><i></i>Live chart feed</label>
+        <label class="sw"><input type="checkbox" id="swG" checked><i></i>Cursor glow</label></div>
+    </div>
+  </div>
+  <div class="big" aria-hidden="true">SPEDAXAI</div>
+  <p class="fine">Demo values on this page are simulated. Nothing here is financial advice. Trading digital assets carries risk, including total loss. © 2026 SpedaxAI.</p>
+</footer>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)],q={};
+$$('[id]').forEach(e=>q[e.id]=e);
+const root=document.documentElement,loops=[];
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let M=!RM,F=!RM;
+root.dataset.motion=M?'on':'off';q.swM.checked=M;q.swF.checked=F;
+const fm=n=>n.toLocaleString('en-US',{style:'currency',currency:'USD'});
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+
+/* headline word reveal */
+$$('.split').forEach(h=>{let i=0;h.innerHTML=h.innerHTML.replace(/(<[^>]+>)|([^<\s]+)/g,(m,t,w)=>t||`<span class="w"><span style="--i:${i++}">${w}</span></span>`)});
+
+/* scroll reveal and counters */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -6% 0px'});
+$$('.rv,.split').forEach(e=>io.observe(e));
+const co=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;co.unobserve(e.target);const el=e.target,n=+el.dataset.n,t0=performance.now();
+ const f=t=>{const p=M?Math.min((t-t0)/1400,1):1;el.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}));
+$$('[data-n]').forEach(e=>co.observe(e));
+
+/* marquee needs a duplicate for a seamless loop */
+const mi=$('.mqi');mi.innerHTML+=mi.innerHTML;
+
+/* card spotlight and cursor glow */
+let gx=0,gy=0,gq=0;
+document.addEventListener('pointermove',e=>{
+ const c=e.target.closest&&e.target.closest('.card');
+ if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}
+ if(q.swG.checked&&e.pointerType!='touch'){gx=e.clientX;gy=e.clientY;if(!gq){gq=1;requestAnimationFrame(()=>{gq=0;q.glow.style.opacity=1;q.glow.style.transform=`translate(${gx}px,${gy}px)`})}}
+});
+
+/* nav: mobile menu and scroll spy */
+q.burger.onclick=()=>{const o=q.nav.classList.toggle('open');q.burger.setAttribute('aria-expanded',o)};
+$$('.links a').forEach(a=>a.addEventListener('click',()=>q.nav.classList.remove('open')));
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('.links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')=='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+['how','sim','why','hashkey','docs'].forEach(id=>spy.observe(q[id]));
+
+/* scroll progress and scroll-driven manifesto */
+const words=[];
+(function(){const m=q.mani,t=m.textContent.trim().split(/\s+/);m.textContent='';t.forEach((w,i)=>{const s=document.createElement('span');s.textContent=w;if(i>=t.length-2)s.className='pp';m.append(s,' ');words.push(s)})})();
+let sq=0;
+function onScroll(){sq=0;
+ const H=document.documentElement.scrollHeight-innerHeight;
+ q.pg.style.transform=`scaleX(${H>0?scrollY/H:0})`;
+ const r=q.mani.getBoundingClientRect(),p=Math.min(Math.max((innerHeight*.9-r.top)/(innerHeight*.55),0),1),n=Math.round(p*words.length);
+ words.forEach((w,i)=>w.classList.toggle('lit',i<n))}
+addEventListener('scroll',()=>{if(!sq){sq=1;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
+
+/* canvas helper: DPR aware, pauses off-screen, respects the switches */
+function cv(id,draw,kind){
+ const c=q[id],g=c.getContext('2d');let w=0,h=0,vis=false,raf=0,last=0;
+ const on=()=>kind=='data'?F:M,run=()=>vis&&on();
+ const rs=()=>{const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();w=r.width;h=r.height;c.width=Math.round(w*d);c.height=Math.round(h*d);g.setTransform(d,0,0,d,0,0)};
+ const once=()=>{if(vis&&w&&h)draw(g,w,h,performance.now(),0)};
+ const frame=t=>{if(!run())return;const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;if(w&&h)draw(g,w,h,t,dt);raf=requestAnimationFrame(frame)};
+ const kick=()=>{cancelAnimationFrame(raf);if(!vis)return;if(on()){last=performance.now();raf=requestAnimationFrame(frame)}else once()};
+ rs();
+ new ResizeObserver(()=>{rs();kick()}).observe(c);
+ new IntersectionObserver(e=>{vis=e[0].isIntersecting;kick()}).observe(c);
+ loops.push(kick);
+ return{redraw:()=>{if(!run())once()}};
+}
+
+/* HERO: trade blocks cross the mandate line. Approved turn purple, rogue ones are reverted. */
+const HB={b:[],p:[],a:0,r:0,sp:0,init:0,dirty:0};
+const hex4=()=>(Math.random()*65536|0).toString(16).padStart(4,'0');
+function mkB(w,h,x,LX){const s=24+Math.random()*38,bad=Math.random()<.22;let st=0;if(x+s/2>=LX){if(bad)x=Math.random()*LX*.9;else st=1}
+ return{x,y:h*.07+Math.random()*h*.86,s,v:26+Math.random()*50,l:hex4(),bad,st,al:1,vy:0}}
+cv('hb',(g,w,h,t,dt)=>{
+ g.clearRect(0,0,w,h);
+ const LX=w*(w<900?.84:.78),cap=w<700?15:30,B=HB.b;
+ if(!HB.init){HB.init=1;for(let i=0;i<cap*.75;i++)B.push(mkB(w,h,Math.random()*w,LX))}
+ HB.sp-=dt;if(HB.sp<=0&&B.length<cap){HB.sp=.3+Math.random()*.45;B.push(mkB(w,h,-70,LX))}
+ const lg=g.createLinearGradient(LX-70,0,LX+70,0);lg.addColorStop(0,'rgba(124,58,237,0)');lg.addColorStop(.5,'rgba(124,58,237,.38)');lg.addColorStop(1,'rgba(124,58,237,0)');
+ g.fillStyle=lg;g.fillRect(LX-70,0,140,h);g.fillStyle='#a78bfa';g.fillRect(LX-1,0,2,h);
+ for(let i=B.length;i--;){const k=B[i];
+  if(k.st==2){k.vy+=520*dt;k.y+=k.vy*dt;k.al-=dt*1.1;if(k.al<=0){B.splice(i,1);continue}}
+  else{k.x+=k.v*dt;
+   if(k.st==0&&k.x+k.s/2>=LX){if(k.bad){k.st=2;k.vy=-60;HB.r++}else{k.st=1;HB.a++}HB.p.push({y:k.y+k.s/2,a:0,bad:k.bad});HB.dirty=1}
+   if(k.x>w+80){B.splice(i,1);continue}}}
+ if(HB.dirty){HB.dirty=0;q.nA.textContent=HB.a;q.nR.textContent=HB.r}
+ B.forEach(k=>{const cx=k.x+k.s/2,cy=k.y+k.s/2,r=Math.max(6,k.s*.2);
+  g.globalAlpha=Math.max(k.al,0);
+  if(k.st==1){g.setLineDash([4,6]);g.strokeStyle='rgba(167,139,250,.55)';g.lineWidth=1;g.beginPath();g.moveTo(LX,cy);g.lineTo(k.x,cy);g.stroke();g.setLineDash([]);
+   g.shadowColor='#7c3aed';g.shadowBlur=16;g.fillStyle='#7c3aed';rr(g,k.x,k.y,k.s,k.s,r);g.fill();g.shadowBlur=0;g.strokeStyle='#c4b5fd';g.lineWidth=1.2;g.stroke()}
+  else if(k.st==2){g.fillStyle='rgba(246,70,93,.14)';g.strokeStyle='#f6465d';g.lineWidth=1.2;rr(g,k.x,k.y,k.s,k.s,r);g.fill();g.stroke()}
+  else{g.fillStyle='rgba(255,255,255,.035)';g.strokeStyle='rgba(255,255,255,.2)';g.lineWidth=1;rr(g,k.x,k.y,k.s,k.s,r);g.fill();g.stroke()}
+  g.font=`500 ${Math.max(9,k.s*.24)}px "JetBrains Mono",monospace`;g.textAlign='center';g.textBaseline='middle';
+  g.fillStyle=k.st==1?'#fff':k.st==2?'#f6465d':'rgba(255,255,255,.5)';
+  g.fillText(k.st==2?'✕':k.l,cx,cy);
+  if(k.st==1&&k.s>34){g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(k.x+k.s-17,k.y+9);g.lineTo(k.x+k.s-13,k.y+13);g.lineTo(k.x+k.s-6,k.y+5);g.stroke()}
+  g.globalAlpha=1});
+ for(let i=HB.p.length;i--;){const p=HB.p[i];p.a+=dt;if(p.a>.9){HB.p.splice(i,1);continue}
+  g.strokeStyle=p.bad?'#f6465d':'#a78bfa';g.globalAlpha=1-p.a/.9;g.lineWidth=2;g.beginPath();g.arc(LX,p.y,10+p.a*80,0,6.283);g.stroke();g.globalAlpha=1}
+},'deco');
+
+/* MARKET: candlestick terminal with volume, MA(7), last-price tag and crosshair */
+const BASE=.412;
+const MK={tf:'1m',cs:[],n:120,acc:0,tk:0,up:0,mx:-1,my:-1,lo:.402,hi:.422,
+ vol:{'1m':.0006,'5m':.0010,'15m':.0016,'1h':.0025},dur:{'1m':800,'5m':1100,'15m':1500,'1h':2000}};
+const mkC=(p,v)=>{const c=p+(Math.random()-.5)*2*v+(BASE-p)*.05;return{o:p,c,h:Math.max(p,c)+Math.random()*v*.7,l:Math.min(p,c)-Math.random()*v*.7,v:30+Math.random()*90}};
+function seed(){MK.cs=[];MK.n=120;let p=BASE;for(let i=0;i<120;i++){const k=mkC(p,MK.vol[MK.tf]);MK.cs.push(k);p=k.c}MK.acc=0;MK.lo=Math.min(...MK.cs.map(k=>k.l))-.002;MK.hi=Math.max(...MK.cs.map(k=>k.h))+.002}
+seed();
+['1m','5m','15m','1h'].forEach(k=>{const b=document.createElement('button');b.type='button';b.className='chip'+(k==MK.tf?' on':'');b.textContent=k;
+ b.onclick=()=>{MK.tf=k;$$('.chip',q.tf).forEach(x=>x.classList.toggle('on',x===b));seed();c1.redraw()};q.tf.append(b)});
+const c1=cv('c1',(g,w,h,t,dt)=>{
+ g.clearRect(0,0,w,h);
+ const V=MK.vol[MK.tf],D=MK.dur[MK.tf];
+ MK.acc+=dt*1000;MK.tk+=dt*1000;MK.up+=dt*1000;
+ let L=MK.cs[MK.cs.length-1];
+ if(MK.tk>110){MK.tk=0;L.c+=(Math.random()-.5)*V*.6+(BASE-L.c)*.012;L.h=Math.max(L.h,L.c);L.l=Math.min(L.l,L.c);L.v+=Math.random()*4}
+ if(MK.acc>=D){MK.acc-=D;MK.cs.push(mkC(L.c,V));MK.cs.shift();MK.n++;L=MK.cs[MK.cs.length-1]}
+ const p=Math.min(MK.acc/D,1),nv=Math.max(30,Math.min(110,Math.floor((w-70)/10))),S0=MK.cs.length-nv,sl=MK.cs.slice(S0);
+ const pw=w-64,pT=30,vh=h*.16,pB=h-vh-14,cw=pw/nv,bw=Math.max(cw*.64,2);
+ let tl=Infinity,th=-Infinity,vm=0;sl.forEach(k=>{tl=Math.min(tl,k.l);th=Math.max(th,k.h);vm=Math.max(vm,k.v)});
+ const rawH=th,rawL=tl,pad=(th-tl)*.12;tl-=pad;th+=pad;
+ const kk=dt?Math.min(dt*5,1):1;MK.lo+=(tl-MK.lo)*kk;MK.hi+=(th-MK.hi)*kk;
+ const Y=v=>pB-(v-MK.lo)/(MK.hi-MK.lo)*(pB-pT);
+ g.font='10.5px "JetBrains Mono",monospace';g.textBaseline='middle';
+ for(let i=0;i<=5;i++){const y=pT+(pB-pT)*i/5,v=MK.hi-(MK.hi-MK.lo)*i/5;
+  g.strokeStyle='#1e2329';g.lineWidth=1;g.beginPath();g.moveTo(0,y);g.lineTo(pw,y);g.stroke();
+  g.fillStyle='#848e9c';g.textAlign='left';g.fillText(v.toFixed(4),pw+8,y)}
+ g.save();g.beginPath();g.rect(0,0,pw,h);g.clip();
+ sl.forEach((k,j)=>{const id=MK.n-(MK.cs.length-1-(S0+j));if(id%10==0){const X=(j-p+.5)*cw;g.strokeStyle='#1a1f25';g.beginPath();g.moveTo(X,pT);g.lineTo(X,h-8);g.stroke()}});
+ sl.forEach((k,j)=>{const X=(j-p+.5)*cw,up=k.c>=k.o,col=up?'#0ecb81':'#f6465d';
+  const vb=k.v/vm*vh*.9;g.fillStyle=up?'rgba(14,203,129,.38)':'rgba(246,70,93,.38)';g.fillRect(X-bw/2,h-8-vb,bw,vb);
+  g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1;g.beginPath();g.moveTo(X,Y(k.h));g.lineTo(X,Y(k.l));g.stroke();
+  const y1=Y(Math.max(k.o,k.c)),bh=Math.max(Math.abs(Y(k.o)-Y(k.c)),1.5);g.fillRect(X-bw/2,y1,bw,bh)});
+ let ma=0;g.beginPath();sl.forEach((k,j)=>{const gi=S0+j;let s=0,c=0;for(let m=Math.max(0,gi-6);m<=gi;m++){s+=MK.cs[m].c;c++}ma=s/c;const X=(j-p+.5)*cw,y=Y(ma);j?g.lineTo(X,y):g.moveTo(X,y)});
+ g.strokeStyle='#f0b90b';g.lineWidth=1.2;g.stroke();g.restore();
+ const lu=L.c>=L.o,lc=lu?'#0ecb81':'#f6465d',ly=Y(L.c);
+ g.setLineDash([3,4]);g.strokeStyle=lc;g.lineWidth=1;g.beginPath();g.moveTo(0,ly);g.lineTo(pw,ly);g.stroke();g.setLineDash([]);
+ g.fillStyle=lc;g.fillRect(pw,ly-9,w-pw,18);g.fillStyle='#fff';g.textAlign='left';g.fillText(L.c.toFixed(4),pw+6,ly);
+ let hk=L;
+ if(MK.mx>=0&&MK.mx<pw&&MK.my>=0&&MK.my<=h){
+  const j=Math.max(0,Math.min(nv-1,Math.round(MK.mx/cw+p-.5)));hk=sl[j];
+  g.strokeStyle='#5e6673';g.setLineDash([4,4]);g.beginPath();g.moveTo(MK.mx,0);g.lineTo(MK.mx,h);g.moveTo(0,MK.my);g.lineTo(pw,MK.my);g.stroke();g.setLineDash([]);
+  if(MK.my>=pT&&MK.my<=pB){const v=MK.lo+(pB-MK.my)/(pB-pT)*(MK.hi-MK.lo);g.fillStyle='#2b3139';g.fillRect(pw,MK.my-9,w-pw,18);g.fillStyle='#eaecef';g.fillText(v.toFixed(4),pw+6,MK.my)}}
+ const hc=hk.c>=hk.o?'#0ecb81':'#f6465d';let x0=12;
+ [['O',hk.o],['H',hk.h],['L',hk.l],['C',hk.c]].forEach(([a,v])=>{g.fillStyle='#848e9c';g.fillText(a,x0,14);x0+=g.measureText(a).width+4;g.fillStyle=hc;const s=v.toFixed(4);g.fillText(s,x0,14);x0+=g.measureText(s).width+12});
+ g.fillStyle='#f0b90b';g.fillText('MA(7) '+ma.toFixed(4),x0+6,14);
+ if(MK.up>220||!dt){MK.up=0;const f0=sl[0].o,ch=(L.c-f0)/f0*100,vol=sl.reduce((a,k)=>a+k.v,0)*1200;
+  q.px.textContent=L.c.toFixed(4);q.px.className=ch>=0?'up':'dn';q.pch.textContent=(ch>=0?'+':'')+ch.toFixed(2)+'%';q.pch.className='mono '+(ch>=0?'up':'dn');
+  q.hh.textContent=rawH.toFixed(4);q.ll.textContent=rawL.toFixed(4);q.vv.textContent=(vol/1e6).toFixed(2)+'M'}
+},'data');
+q.c1.addEventListener('pointermove',e=>{const r=q.c1.getBoundingClientRect();MK.mx=e.clientX-r.left;MK.my=e.clientY-r.top;c1.redraw()});
+q.c1.addEventListener('pointerleave',()=>{MK.mx=-1;MK.my=-1;c1.redraw()});
+
+/* SPREAD: two pools, arbitrage windows highlighted in green */
+const N=150,PA=[],PB=[],hits=[];let pa=0,pb=0,sa=0,cd=0,ready=0,fed=0,l2=-20,h2=20,su=0;
+const pr=v=>(0.41*(1+v/1e4)).toFixed(4);
+function report(g){
+ const hiP=g>0?['A',pr(pa)]:['B',pr(pb)],loP=g>0?['B',pr(pb)]:['A',pr(pa)],amt=(800+Math.random()*2200)|0,net=((Math.abs(g)-9)/100).toFixed(2);
+ const d=document.createElement('div');d.textContent=`Bought ${amt.toLocaleString()} HSK on Pool ${loP[0]} at ${loP[1]}, sold on Pool ${hiP[0]} at ${hiP[1]}. Net +${net}% after fees. Inside your mandate.`;
+ if(!fed){fed=1;q.feed.innerHTML=''}
+ q.feed.prepend(d);while(q.feed.children.length>3)q.feed.lastChild.remove()}
+function step(){
+ pa+=(Math.random()-.5)*14-pa*.012;pb+=(pa-pb)*.12+(Math.random()-.5)*4;PA.push(pa);PB.push(pb);
+ if(PA.length>N){PA.shift();PB.shift();for(let i=hits.length;i--;){hits[i]--;if(hits[i]<0)hits.splice(i,1)}}
+ cd--;const gap=pa-pb;if(Math.abs(gap)>18&&cd<=0&&ready){cd=40;hits.push(PA.length-1);report(gap)}}
+for(let i=0;i<N;i++)step();ready=1;
+cv('c2',(g,w,h,t,dt)=>{
+ g.clearRect(0,0,w,h);
+ sa+=dt*1000;while(sa>=70){sa-=70;step()}
+ su+=dt*1000;
+ const mn=Math.min(...PA,...PB)-8,mx=Math.max(...PA,...PB)+8,kk=dt?Math.min(dt*5,1):1;l2+=(mn-l2)*kk;h2+=(mx-h2)*kk;
+ const pw=w-58,X=i=>i/(N-1)*pw,Y=v=>h-12-(v-l2)/(h2-l2)*(h-24);
+ g.font='10.5px "JetBrains Mono",monospace';g.textBaseline='middle';g.textAlign='left';
+ for(let i=0;i<=4;i++){const y=12+(h-24)*i/4,v=h2-(h2-l2)*i/4;g.strokeStyle='#1e2329';g.lineWidth=1;g.beginPath();g.moveTo(0,y);g.lineTo(pw,y);g.stroke();g.fillStyle='#848e9c';g.fillText(pr(v),pw+8,y)}
+ const sw=pw/(N-1)+1;g.fillStyle='rgba(14,203,129,.24)';
+ for(let i=0;i<PA.length;i++){const d=PA[i]-PB[i];if(Math.abs(d)>18){const y1=Y(PA[i]),y2=Y(PB[i]);g.fillRect(X(i)-sw/2,Math.min(y1,y2),sw,Math.abs(y1-y2))}}
+ const ln=(S,col)=>{g.beginPath();S.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.strokeStyle=col;g.lineWidth=1.7;g.lineJoin='round';g.stroke()};
+ ln(PB,'#f0b90b');ln(PA,'#eaecef');
+ hits.forEach(i=>{const r=6+((t/45+i*7)%20);g.strokeStyle='#0ecb81';g.globalAlpha=1-(r-6)/20;g.lineWidth=1.5;g.beginPath();g.arc(X(i),Y(PA[i]),r,0,6.283);g.stroke();g.globalAlpha=1;g.fillStyle='#fff';g.beginPath();g.arc(X(i),Y(PA[i]),3,0,6.283);g.fill()});
+ const tag=(v,bg,fg)=>{const y=Y(v);g.fillStyle=bg;g.fillRect(pw,y-9,w-pw,18);g.fillStyle=fg;g.fillText(pr(v),pw+6,y)};
+ tag(PB[PB.length-1],'#f0b90b','#000');tag(PA[PA.length-1],'#eaecef','#000');
+ if(su>200||!dt){su=0;const d=Math.abs(pa-pb);q.spd.textContent=d.toFixed(0)+' bps';q.spd.className=d>18?'up':''}
+},'data');
+
+/* MANDATE SIMULATOR */
+const PR={'HSK/USDC':1,'WETH/USDC':1,'WBTC/USDC':1,'PEPE/USDC':0};
+const S={bal:1e4,start:1e4,fr:0,auto:0,tm:0,hist:Array.from({length:60},()=>({v:1e4,t:'s'}))};
+const pushH=t=>{S.hist.push({v:S.bal,t});if(S.hist.length>60)S.hist.shift()};
+const set=(id,v)=>{q[id].value=v;q[id].dispatchEvent(new Event('input'))};
+const EQ={lo:9400,hi:10100};
+const c3=cv('c3',(g,w,h,t,dt)=>{
+ g.clearRect(0,0,w,h);
+ const H=S.hist,n=H.length,pw=w-62,pT=18,pB=h-16,sp=pw/59,lim=S.start*(1-q.mL.value/100);
+ let mn=lim,mx=S.start;H.forEach(x=>{mn=Math.min(mn,x.v);mx=Math.max(mx,x.v)});
+ const pd=(mx-mn)*.14||50;mn-=pd;mx+=pd;const kk=dt?Math.min(dt*6,1):1;EQ.lo+=(mn-EQ.lo)*kk;EQ.hi+=(mx-EQ.hi)*kk;
+ const X=i=>pw-(n-1-i)*sp,Y=v=>pB-(v-EQ.lo)/(EQ.hi-EQ.lo)*(pB-pT),lastV=H[n-1].v,col=lastV>=S.start?'#0ecb81':'#f6465d';
+ const money=v=>'$'+Math.round(v).toLocaleString('en-US');
+ g.font='10.5px "JetBrains Mono",monospace';g.textBaseline='middle';g.textAlign='left';
+ const yl=Y(lim);
+ if(yl<pB){g.fillStyle='rgba(246,70,93,.08)';g.fillRect(0,yl,pw,pB-yl)}
+ g.setLineDash([5,5]);g.lineWidth=1;
+ g.strokeStyle='#5e6673';g.beginPath();g.moveTo(0,Y(S.start));g.lineTo(pw,Y(S.start));g.stroke();
+ g.strokeStyle='#f6465d';g.beginPath();g.moveTo(0,yl);g.lineTo(pw,yl);g.stroke();g.setLineDash([]);
+ g.fillStyle='#848e9c';g.fillText(money(S.start),pw+8,Y(S.start));g.fillStyle='#f6465d';g.fillText(money(lim),pw+8,yl);
+ g.fillText('limit set by the owner: -'+q.mL.value+'% daily',8,Math.min(yl-9,pB-6));
+ g.beginPath();H.forEach((x,i)=>i?g.lineTo(X(i),Y(x.v)):g.moveTo(X(i),Y(x.v)));
+ g.strokeStyle=col;g.lineWidth=2;g.lineJoin='round';g.stroke();
+ g.lineTo(X(n-1),pB);g.lineTo(X(0),pB);g.closePath();
+ const gr=g.createLinearGradient(0,pT,0,pB);gr.addColorStop(0,col=='#0ecb81'?'rgba(14,203,129,.28)':'rgba(246,70,93,.28)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fill();
+ H.forEach((x,i)=>{const px=X(i),py=Y(x.v);
+  if(x.t=='e'){g.fillStyle='#fff';g.beginPath();g.arc(px,py,2.5,0,6.283);g.fill()}
+  else if(x.t=='r'){g.strokeStyle='#f6465d';g.lineWidth=1.6;g.beginPath();g.moveTo(px-3.5,py-3.5);g.lineTo(px+3.5,py+3.5);g.moveTo(px+3.5,py-3.5);g.lineTo(px-3.5,py+3.5);g.stroke()}
+  else if(x.t=='f'){g.strokeStyle='#f6465d';g.lineWidth=2;g.beginPath();g.arc(px,py,7,0,6.283);g.stroke()}});
+ const ex=X(n-1),ey=Y(lastV);
+ g.strokeStyle=col;g.globalAlpha=.5;g.lineWidth=1.5;g.beginPath();g.arc(ex,ey,5+(Math.sin(t/220)+1)*3,0,6.283);g.stroke();g.globalAlpha=1;
+ g.fillStyle=col;g.beginPath();g.arc(ex,ey,3.5,0,6.283);g.fill();
+ g.fillStyle=col;g.fillRect(pw,ey-9,w-pw,18);g.fillStyle='#fff';g.fillText(money(lastV),pw+5,ey);
+},'deco');
+[['mT','vA','%'],['mL','vB','%'],['mS','vC',' bps']].forEach(([i,o,u])=>q[i].oninput=()=>{q[o].textContent=q[i].value+u;ui()});
+function drawPairs(){q.pairs.innerHTML='';Object.keys(PR).forEach(k=>{const b=document.createElement('button');b.type='button';b.className='chip'+(PR[k]?' on':'');b.textContent=k;b.onclick=()=>{PR[k]^=1;drawPairs()};q.pairs.append(b)})}drawPairs();
+const setPair=(k,v)=>{PR[k]=v?1:0;drawPairs()};
+[['Conservative',5,2,30],['Balanced',10,5,50],['Active',25,10,100]].forEach(([n,a,b,c])=>{const x=document.createElement('button');x.type='button';x.className='chip';x.textContent=n;x.onclick=()=>{set('mT',a);set('mL',b);set('mS',c)};q.pre.append(x)});
+function log(tag,msg,cls){const d=document.createElement('div');d.className=cls;d.innerHTML=`<b>${tag}</b>`;d.append(msg);q.log.prepend(d);while(q.log.children.length>30)q.log.lastChild.remove()}
+function ui(){
+ const l=(S.start-S.bal)/S.start*100,pc=(S.bal-S.start)/S.start*100,used=Math.min(Math.max(l,0)/+q.mL.value*100,100);
+ q.bal.textContent=fm(S.bal);q.pnl.textContent=(pc>=0?'+':'')+pc.toFixed(2)+'% since baseline';q.pnl.className='mono '+(pc>=0?'up':'dn');
+ q.mb.style.width=(100-used)+'%';q.mp.textContent=used.toFixed(0)+'%';
+ q.st.textContent=S.fr?'FROZEN':'ACTIVE';q.st.className='pill'+(S.fr?' fz':'');q.bU.hidden=!S.fr;c3.redraw()}
+function auto(on){S.auto=on;clearInterval(S.tm);if(on)S.tm=setInterval(tick,1300);q.bA.textContent=on?'❚❚ Pause agent':'▶ Run agent'}
+function freeze(why){S.fr=1;auto(0);log('FREEZE',why,'f');pushH('f');ui()}
+function attempt(x){
+ let r='';
+ if(S.fr)r='AgentFrozen: circuit breaker is on';
+ else if(x.kind=='wd')r='WithdrawalNotAllowed: only the owner can exit';
+ else if(!PR[x.pair])r='PairNotAllowed: '+x.pair;
+ else if(x.pct>+q.mT.value)r=`ExceedsMaxTrade: ${x.pct}% > ${q.mT.value}%`;
+ else if(x.slip>+q.mS.value)r=`SlippageTooHigh: ${x.slip} > ${q.mS.value} bps`;
+ if(r){log('REVERT',`${x.label} → ${r}`,'r');pushH('r');ui();return}
+ const p=S.bal*x.pct/100*(Math.random()-.5)*.09;S.bal+=p;
+ log('EXEC',`${x.label} → ${p>=0?'+':'-'}$${Math.abs(p).toFixed(2)}`,'x');pushH('e');
+ if((S.start-S.bal)/S.start*100>=+q.mL.value)freeze('Daily loss limit reached. Agent frozen by the contract.');
+ ui()}
+function tick(){const pair=Math.random()<.15?'PEPE/USDC':['HSK/USDC','WETH/USDC','WBTC/USDC'][Math.random()*3|0],pct=(2+Math.random()*10)|0,slip=(10+Math.random()*50)|0;
+ attempt({pair,pct,slip,label:`swap ${pct}% ${pair} @${slip}bps`})}
+q.bA.onclick=()=>auto(!S.auto);
+q.r1.onclick=()=>attempt({kind:'wd',label:'withdraw(all) → 0xBAD…f00'});
+q.r2.onclick=()=>attempt({pair:'HSK/USDC',pct:90,slip:20,label:'swap 90% HSK/USDC'});
+q.r3.onclick=()=>attempt({pair:'PEPE/USDC',pct:5,slip:20,label:'swap 5% PEPE/USDC'});
+q.bU.onclick=()=>{S.fr=0;S.start=S.bal;pushH('s');log('OWNER','Owner signed unfreeze. New daily baseline set.','o');ui()};
+ui();
+
+/* chat helpers */
+function typing(box){const d=document.createElement('div');d.className='m bot typ';d.innerHTML='<i></i><i></i><i></i>';box.append(d);box.scrollTop=box.scrollHeight;return d}
+function botSay(box,text,cb){const t=typing(box);setTimeout(()=>{t.remove();const d=document.createElement('div');d.className='m bot';d.textContent=text;box.append(d);box.scrollTop=box.scrollHeight;cb&&cb()},M?520:0)}
+function userSay(box,text){const d=document.createElement('div');d.className='m me';d.textContent=text;box.append(d);box.scrollTop=box.scrollHeight}
+
+/* CHAT TO RULE CARDS */
+const P=[
+ {t:'Be more aggressive today',k:/aggress|bigger|larger|more risk/i,r:'Larger positions raise your risk, so I need your sign-off first.',c:['Max per trade',()=>q.mT.value+'% → 20%',()=>set('mT',20)]},
+ {t:'Add PEPE/USDC to my pairs',k:/pepe|add.*pair|new pair/i,r:'Adding a pair widens where I can trade. Please confirm.',c:['Allowed pairs',()=>'+ PEPE/USDC',()=>setPair('PEPE/USDC',1)]},
+ {t:'Cap my daily loss at 2%',k:/loss|cap\b|limit/i,r:'Tighter limit noted. Every rule change is a card, even safer ones.',c:['Daily loss limit',()=>q.mL.value+'% → 2%',()=>set('mL',2)]},
+ {t:'Pause the agent',k:/pause|stop|freeze|halt/i,r:'I can propose a pause. The freeze is applied on-chain once you confirm.',c:['Agent status',()=>'ACTIVE → PAUSED',()=>freeze('Owner pause confirmed.')]},
+ {t:'Send everything to 0x9aF…c21',k:/send|withdraw|transfer|drain|everything/i,r:`I can't do that from chat. Conversation can propose rules but never move money. Withdrawals need a signature from your owner wallet.`,x:1}];
+function propose(p,text){
+ userSay(q.cm,text);
+ botSay(q.cm,p.r,()=>{
+  const card=document.createElement('div');card.className='rc'+(p.x?' x':'');
+  if(p.x){card.innerHTML='<b class="mono dn">BLOCKED. No rule change created.</b>'}
+  else{card.innerHTML=`<b class="mono pl">RULE CHANGE · ${p.c[0]}</b><p>${p.c[1]()}</p>`;
+   const y=document.createElement('button'),n=document.createElement('button'),r=document.createElement('div');
+   y.type=n.type='button';y.className='btn s';y.textContent='Confirm';n.className='btn s k';n.textContent='Reject';
+   y.onclick=()=>{p.c[2]();card.innerHTML='<b class="mono up">✓ CONFIRMED. Mandate updated.</b>'};
+   n.onclick=()=>{card.innerHTML='<b class="mono dim">✕ REJECTED. Nothing changed.</b>'};
+   r.className='row';r.append(y,n);card.append(r)}
+  q.cm.append(card);q.cm.scrollTop=q.cm.scrollHeight})}
+P.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=p.t;b.onclick=()=>propose(p,p.t);q.cp.append(b)});
+q.cf.onsubmit=e=>{e.preventDefault();const v=q.ci.value.trim();if(!v)return;q.ci.value='';
+ const m=[P[4],...P.slice(0,4)].find(p=>p.k.test(v));
+ if(m)propose(m,v);else{userSay(q.cm,v);botSay(q.cm,'I can only turn requests into rule cards. Try: "cap my daily loss at 2%", "add PEPE" or "pause the agent".')}};
+
+/* HASHKEY: illustrative block stream */
+const CH={pos:0};
+const hx=n=>((n*2654435761)>>>0).toString(16).padStart(8,'0');
+cv('c4',(g,w,h,t,dt)=>{
+ g.clearRect(0,0,w,h);
+ const bw=w<600?150:176,bh=104,gap=64,uw=bw+gap;
+ CH.pos+=dt*38;
+ const base=Math.floor(CH.pos/uw),off=CH.pos%uw,y=(h-bh)/2+8,cnt=Math.ceil(w/uw)+2;
+ g.textBaseline='middle';g.textAlign='left';
+ for(let i=0;i<cnt;i++){
+  const n=base+i+48210,x=i*uw-off+16,fresh=x>w-uw*1.15;
+  g.strokeStyle='rgba(255,255,255,.4)';g.lineWidth=1;g.beginPath();g.moveTo(x+bw,y+bh/2);g.lineTo(x+uw,y+bh/2);g.stroke();
+  const k=((t/900+i*.37)%1);g.fillStyle='#fff';g.beginPath();g.arc(x+bw+gap*k,y+bh/2,2.5,0,6.283);g.fill();
+  rr(g,x,y,bw,bh,16);g.fillStyle='rgba(0,0,0,.35)';g.fill();
+  g.setLineDash(fresh?[5,5]:[]);g.strokeStyle=fresh?'#ddd6fe':'rgba(255,255,255,.6)';g.lineWidth=1.2;g.stroke();g.setLineDash([]);
+  g.font='600 12px "JetBrains Mono",monospace';g.fillStyle='#fff';g.fillText('Block #'+n,x+14,y+24);
+  g.font='500 11px "JetBrains Mono",monospace';g.fillStyle='rgba(255,255,255,.7)';
+  g.fillText((6+(n*7919)%23)+' txs',x+14,y+46);g.fillText('0x'+hx(n).slice(0,4)+'…'+hx(n).slice(-4),x+14,y+66);
+  if(n%3==0){rr(g,x+14,y+78,bw-28,18,9);g.fillStyle='#7c3aed';g.fill();g.font='500 10px "JetBrains Mono",monospace';g.fillStyle='#fff';g.fillText('vault swap ✓',x+22,y+87.5)}}
+},'deco');
+
+/* DOCS */
+const D={
+intro:['Introduction',`<h3>What is SpedaxAI?</h3><p>SpedaxAI is a non-custodial trading vault on HashKey Chain. An AI agent finds arbitrage and price-spread opportunities on HSKSwap and executes them for you, but only inside a <b>mandate</b> stored in, and enforced by, your vault's smart contract.</p><h3>Core terms</h3><ul><li><b>Vault</b>: your personal contract. Only your owner wallet can withdraw, change rules or unfreeze.</li><li><b>Mandate</b>: limits on trade size, pairs, slippage and daily loss.</li><li><b>Agent</b>: an AI process holding a trade-only key. It proposes swaps and cannot withdraw.</li><li><b>Circuit breaker</b>: an automatic freeze when losses hit your limit.</li></ul>`],
+start:['Quickstart',`<h3>From zero to trading</h3><ol><li>Connect your owner wallet to HashKey Chain.</li><li>Deploy your vault (one transaction).</li><li>Set your mandate or pick a preset: Conservative, Balanced or Active.</li><li>Deposit funds into the vault.</li><li>Start the agent and watch the plain-language reports.</li></ol><p>You can pause the agent or withdraw at any moment from the owner wallet.</p><h3>Example preset</h3><div class="code"><button class="copy" type="button">Copy</button><pre><code><span class="c"># Illustrative preset (final format may differ)</span>
+preset: balanced
+max_trade_pct: 10
+daily_loss_limit_pct: 5
+max_slippage_bps: 50
+allowed_pairs:
+  - HSK/USDC
+  - WETH/USDC</code></pre></div>`],
+mandate:['Mandate reference',`<h3>Parameters (draft spec)</h3><table><tr><th>PARAMETER</th><th>MEANING</th></tr><tr><td><code>maxTradePct</code></td><td>Largest single trade as a % of vault value</td></tr><tr><td><code>dailyLossLimitPct</code></td><td>Loss threshold that triggers the freeze</td></tr><tr><td><code>maxSlippageBps</code></td><td>Worst acceptable price impact per swap</td></tr><tr><td><code>allowedPairs</code></td><td>Whitelist of tradable token pairs</td></tr><tr><td><code>allowedVenue</code></td><td>HSKSwap router the vault may call</td></tr><tr><td><code>withdrawTo</code></td><td>Owner address only, never the agent</td></tr></table><p>Any change is a signed owner transaction. Chat can only draft it as a card.</p><h3>Interface sketch</h3><div class="code"><button class="copy" type="button">Copy</button><pre><code><span class="c">// Illustrative only, not the final ABI</span>
+function executeSwap(SwapParams calldata p) external onlyAgent whenNotFrozen;
+function setMandate(Mandate calldata m) external onlyOwner;
+function unfreeze() external onlyOwner;
+function withdraw(address token, uint256 amt) external onlyOwner;</code></pre></div>`],
+breaker:['Circuit breaker',`<h3>How the freeze works</h3><p>The vault tracks its balance against a daily baseline. When realized loss reaches <code>dailyLossLimitPct</code>, the contract sets the agent to frozen and rejects every further agent call.</p><ul><li>Enforced by the contract, not by our backend.</li><li>Open positions are never force-extended. The agent simply cannot act.</li><li>Only the owner wallet can unfreeze, which sets a new baseline.</li></ul>`],
+chat:['Chat and voice',`<h3>Conversation proposes, you confirm</h3><ol><li>You say or type what you want.</li><li>The agent turns it into a rule-change card.</li><li>You review the card and sign with your owner wallet.</li><li>The contract applies the change.</li></ol><table><tr><th>CHAT CAN</th><th>CHAT CANNOT</th></tr><tr><td>Draft a rule change as a card</td><td>Move or withdraw funds</td></tr><tr><td>Explain trades in plain language</td><td>Loosen risk without your signature</td></tr><tr><td>Propose a pause</td><td>Unfreeze the agent</td></tr></table>`],
+security:['Security model',`<h3>Threats and outcomes</h3><table><tr><th>THREAT</th><th>OUTCOME</th></tr><tr><td>AI makes a bad decision</td><td>Reverted if outside the mandate, bounded loss if inside</td></tr><tr><td>Prompt injection</td><td>Same result: the contract ignores intent and checks the action</td></tr><tr><td>Backend compromised</td><td>The attacker holds only a trade-only key, inside the mandate</td></tr><tr><td>Malicious chat message</td><td>Produces a card. Nothing changes without owner confirmation</td></tr></table><p>Remaining risk: market risk inside your limits, smart-contract bugs and venue risk. Audits and a bug bounty are part of our launch plan.</p>`],
+faq:['FAQ',`<h3>Common questions</h3><details><summary>Can the agent withdraw my money?</summary><p>No. The vault has no withdrawal path for the agent key.</p></details><details><summary>Can I lose money?</summary><p>Yes. Trading is risky. The mandate caps how much can be lost per day, not whether trades win.</p></details><details><summary>Do you hold my keys?</summary><p>Never. We do not ask for seed phrases or private keys.</p></details><details><summary>Which chain and venue?</summary><p>HashKey Chain mainnet and HSKSwap.</p></details>`]};
+Object.keys(D).forEach((k,i)=>{const b=document.createElement('button');b.type='button';b.textContent=D[k][0];
+ b.onclick=()=>{$$('button',q.dn).forEach(x=>x.classList.toggle('on',x===b));q.dc.innerHTML=D[k][1];q.dc.classList.remove('fade');void q.dc.offsetWidth;q.dc.classList.add('fade')};
+ q.dn.append(b);if(!i)b.click()});
+function fb(t){const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.append(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove()}
+function copyText(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t).catch(()=>fb(t));fb(t)}
+q.dc.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;copyText(b.parentElement.querySelector('code').textContent);b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1600)});
+
+/* REGISTRATION AGENT */
+const R=[
+ {k:'name',q:"Hey, I'm Sped, the onboarding agent. What should I call you?",v:/^.{2,40}$/,e:'Please share a name I can use.'},
+ {k:'email',q:n=>`Nice to meet you, ${n}. Where should I send your vault invite?`,v:/^\S+@\S+\.\S+$/,e:"That doesn't look like an email. Try again?"},
+ {k:'wallet',q:'Your owner wallet on HashKey Chain (0x...). It controls the vault, never the agent.',v:/^0x[a-fA-F0-9]{40}$/,e:'I need a 42-character address starting with 0x.'},
+ {k:'risk',q:'Pick a starting risk profile.',o:['Conservative','Balanced','Active']},
+ {k:'cap',q:'Planned starting capital?',o:['Under $1k','$1k to $10k','Over $10k']}];
+const AN={};let ri=0,busy=0;
+function ask(){
+ const s=R[ri];q.ro.innerHTML='';q.rp.style.width=(ri/R.length*100)+'%';busy=1;
+ if(!s){botSay(q.rm,`Here's your request:\nName: ${AN.name}\nEmail: ${AN.email}\nWallet: ${AN.wallet}\nProfile: ${AN.risk}\nCapital: ${AN.cap}`,()=>{
+   q.rf.hidden=true;busy=0;const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Confirm registration';
+   b.onclick=()=>{/* TODO: fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(AN)}) */
+    q.ro.innerHTML='';q.rp.style.width='100%';botSay(q.rm,'Done. Reference SPX-'+Math.random().toString(36).slice(2,8).toUpperCase()+`. Your invite goes to ${AN.email}.`)};
+   q.ro.append(b)});return}
+ botSay(q.rm,typeof s.q=='function'?s.q(AN.name):s.q,()=>{busy=0;
+  (s.o||[]).forEach(o=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=o;b.onclick=()=>ans(o);q.ro.append(b)});
+  q.rin.placeholder=s.o?'Pick an option above...':'Type your answer...'})}
+function ans(v){
+ if(busy)return;const s=R[ri];if(!s)return;v=v.trim();if(!v)return;
+ if(s.o){const m=s.o.find(o=>o.toLowerCase()==v.toLowerCase());if(!m){userSay(q.rm,v);q.rin.value='';botSay(q.rm,'Please pick one of the options above.');return}v=m}
+ if(s.v&&!s.v.test(v)){userSay(q.rm,v);q.rin.value='';botSay(q.rm,s.e);return}
+ AN[s.k]=v;userSay(q.rm,v);ri++;q.rin.value='';ask()}
+q.rf.onsubmit=e=>{e.preventDefault();ans(q.rin.value)};ask();
+q.ff.onsubmit=e=>{e.preventDefault();/* TODO: send q.fe.value to your backend */q.fm.textContent='✓ You are on the list. Watch your inbox.';q.fe.value=''};
+
+/* SWITCHES */
+function svgAnim(){$$('svg').forEach(s=>{if(s.pauseAnimations)M?s.unpauseAnimations():s.pauseAnimations()})}
+q.swM.onchange=()=>{M=q.swM.checked;root.dataset.motion=M?'on':'off';svgAnim();loops.forEach(f=>f())};
+q.swF.onchange=()=>{F=q.swF.checked;loops.forEach(f=>f())};
+q.swG.onchange=()=>{q.glow.style.display=q.swG.checked?'':'none'};
+svgAnim();
+</script>
+</body>
+</html>

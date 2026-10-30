@@ -257,7 +257,7 @@ export default function PolicyPage() {
     new Date(selectedVault.pendingPolicy.unlockAt).getTime() <= Date.now();
 
   return (
-    <div className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-8 py-10 space-y-10">
+    <div className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-8 pt-28 pb-16 space-y-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2">
         <div>
@@ -637,7 +637,7 @@ export default function PolicyPage() {
               </span>
             </div>
             <div className="space-y-1.5 font-mono text-xs font-bold text-white">
-              <div>Tokens: {selectedVault.allowedTokens.length > 0 ? selectedVault.allowedTokens.map((t) => formatAddress(t)).join(", ") : (process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? formatAddress(process.env.NEXT_PUBLIC_ALLOWED_TOKENS) : "None registered")}</div>
+              <div>Tokens: {selectedVault.allowedTokens.length > 0 ? selectedVault.allowedTokens.map((t) => formatAddress(t)).join(", ") : (process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? process.env.NEXT_PUBLIC_ALLOWED_TOKENS.split(",").map((t) => formatAddress(t.trim())).join(", ") : "None registered")}</div>
               <div>Router: {selectedVault.allowedPools.length > 0 ? selectedVault.allowedPools.map((p) => formatAddress(p)).join(", ") : (process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS ? formatAddress(process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS) : "None registered")}</div>
             </div>
           </div>

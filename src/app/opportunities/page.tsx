@@ -113,7 +113,7 @@ export default function OpportunitiesPage() {
   };
 
   return (
-    <div className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-8 py-10 space-y-8">
+    <div className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-8 pt-28 pb-16 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2">
         <div>

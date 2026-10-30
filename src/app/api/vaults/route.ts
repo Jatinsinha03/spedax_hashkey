@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
               maxSlippageBps: onChain.mandate.maxSlippageBps,
               approvalThreshold: onChain.approvalThresholdFormatted,
               agentAddress: onChain.agent && onChain.agent !== ethers.ZeroAddress ? onChain.agent.toLowerCase() : null,
-              allowedTokens: process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? [process.env.NEXT_PUBLIC_ALLOWED_TOKENS] : [],
+              allowedTokens: process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? process.env.NEXT_PUBLIC_ALLOWED_TOKENS.split(",").map((s) => s.trim()).filter(Boolean) : [],
               allowedPools: process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS ? [process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS] : [],
               status: onChain.frozen ? "FROZEN" : onChain.paused ? "PAUSED" : "ACTIVE",
             },

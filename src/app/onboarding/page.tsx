@@ -139,7 +139,7 @@ export default function OnboardingPage() {
           maxDailyVolume: (Number(customPosition) * 5).toString(),
           maxSlippageBps: selectedPreset.maxSlippageBps,
           approvalThreshold: customThreshold,
-          allowedTokens: process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? [process.env.NEXT_PUBLIC_ALLOWED_TOKENS] : [],
+          allowedTokens: process.env.NEXT_PUBLIC_ALLOWED_TOKENS ? process.env.NEXT_PUBLIC_ALLOWED_TOKENS.split(",").map((s) => s.trim()).filter(Boolean) : [],
           allowedPools: process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS ? [process.env.NEXT_PUBLIC_SWAP_ROUTER_ADDRESS] : [],
         }),
       });
@@ -163,7 +163,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 py-12">
+    <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 pt-28 pb-16">
       {/* Stepper Progress */}
       <div className="flex items-center justify-center gap-6 mb-12">
         <div className={`flex items-center gap-2.5 text-sm font-bold ${step >= 1 ? "text-indigo-400" : "text-slate-500"}`}>

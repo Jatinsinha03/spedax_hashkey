@@ -3,15 +3,15 @@ import prisma from "@/lib/prisma";
 import crypto from "crypto";
 
 
+
 export async function GET(req: NextRequest) {
+  const address = req.nextUrl.searchParams.get("address")?.toLowerCase();
+
+  if (!address || !address.startsWith("0x")) {
+    return NextResponse.json({ error: "Valid Ethereum address is required" }, { status: 400 });
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const address = searchParams.get("address")?.toLowerCase();
-
-    if (!address || !address.startsWith("0x")) {
-      return NextResponse.json({ error: "Valid Ethereum address is required" }, { status: 400 });
-    }
-
     const newNonce = crypto.randomBytes(16).toString("hex");
 
     const user = await prisma.user.upsert({
@@ -30,7 +30,10 @@ export async function GET(req: NextRequest) {
       nonce: user.nonce,
       message,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+      throw error;
+    }
     console.error("Error generating nonce:", error);
     return NextResponse.json({ error: "Failed to generate sign-in challenge" }, { status: 500 });
   }

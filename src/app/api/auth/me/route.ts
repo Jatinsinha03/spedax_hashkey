@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 
+
 export async function GET(req: NextRequest) {
+  const sessionUser = req.cookies.get("rk_session_user")?.value;
+  const queryAddress = req.nextUrl.searchParams.get("address")?.toLowerCase();
+  const address = sessionUser || queryAddress;
+
+  if (!address) {
+    return NextResponse.json({ authenticated: false, user: null });
+  }
+
   try {
-    const sessionUser = req.cookies.get("rk_session_user")?.value;
-    const queryAddress = req.nextUrl.searchParams.get("address")?.toLowerCase();
-
-    const address = sessionUser || queryAddress;
-
-    if (!address) {
-      return NextResponse.json({ authenticated: false, user: null });
-    }
 
     const user = await prisma.user.findUnique({
       where: { address },
@@ -34,7 +35,10 @@ export async function GET(req: NextRequest) {
         vaults: user.vaults,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+      throw error;
+    }
     console.error("Auth me check error:", error);
     return NextResponse.json({ authenticated: false, error: "Failed to fetch session" }, { status: 500 });
   }

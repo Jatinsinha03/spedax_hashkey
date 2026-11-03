@@ -5,15 +5,20 @@ export class StateService {
 
   /**
    * Acquire Postgres single-instance advisory lock
+   * Skips session advisory locks when using PgBouncer/Supabase transaction pooler (port 6543)
    */
   public async acquireInstanceLock(): Promise<boolean> {
+    const dbUrl = process.env.DATABASE_URL || "";
+    if (dbUrl.includes(":6543") || dbUrl.includes("pgbouncer=true")) {
+      return true;
+    }
+
     try {
       const res: Array<{ pg_try_advisory_lock: boolean }> = await prisma.$queryRawUnsafe(
         `SELECT pg_try_advisory_lock(${StateService.ADVISORY_LOCK_ID});`
       );
       return res?.[0]?.pg_try_advisory_lock === true;
-    } catch (e) {
-      console.warn("Could not acquire Postgres advisory lock, continuing with process lock:", e);
+    } catch {
       return true;
     }
   }
@@ -22,6 +27,11 @@ export class StateService {
    * Release Postgres advisory lock
    */
   public async releaseInstanceLock(): Promise<void> {
+    const dbUrl = process.env.DATABASE_URL || "";
+    if (dbUrl.includes(":6543") || dbUrl.includes("pgbouncer=true")) {
+      return;
+    }
+
     try {
       await prisma.$queryRawUnsafe(`SELECT pg_advisory_unlock(${StateService.ADVISORY_LOCK_ID});`);
     } catch {

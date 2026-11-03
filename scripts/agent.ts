@@ -84,8 +84,35 @@ async function main() {
   // Continuous run
   await worker.start();
 
+  // If deployed on Render Web Service, start an HTTP health check listener on process.env.PORT
+  let server: any = null;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : null;
+  if (port) {
+    const http = await import("http");
+    server = http.createServer((req, res) => {
+      if (req.url === "/health" || req.url === "/") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ 
+          status: "ok", 
+          service: "hashpilot-agent-worker", 
+          chainId: 177,
+          timestamp: new Date().toISOString() 
+        }));
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    });
+    server.listen(port, "0.0.0.0", () => {
+      console.log(`[AgentWorker HTTP] Health check server listening on port ${port}`);
+    });
+  }
+
   const shutdown = async () => {
     console.log("\n[AgentWorker CLI] Received termination signal. Shutting down...");
+    if (server) {
+      server.close();
+    }
     await worker.stop();
     process.exit(0);
   };

@@ -82,22 +82,25 @@ button, input {
   transition: none !important;
 }
 
-/* Typography */
-h1, h2, h3 {
-  font-weight: 800;
+/* Typography - Scoped to Landing Page Hero & Showcase */
+.hero h1 {
+  font-size: clamp(2.8rem, 8vw, 7.5rem);
+  line-height: 0.94;
+  font-weight: 900;
   letter-spacing: -0.055em;
-  line-height: 0.98;
   word-spacing: -0.05em;
   text-wrap: balance;
 }
 
-h1 {
-  font-size: clamp(2.8rem, 8vw, 7.5rem);
-  line-height: 0.94;
-}
-
-.h {
-  font-size: clamp(2.6rem, 6.6vw, 6.2rem);
+.hero h2,
+.hero h3,
+.sec .h {
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  word-spacing: -0.04em;
+  text-wrap: balance;
 }
 
 .lead {

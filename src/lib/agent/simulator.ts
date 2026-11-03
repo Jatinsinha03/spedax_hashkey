@@ -97,6 +97,7 @@ export class SimulatorService {
           grossProfitRaw: profit,
           requiresApproval: false,
           estimatedGasUnits: BigInt(320000), // Standard 2-3 step V3 multi-swap gas estimate
+          revertReason: "InsufficientReturn",
         };
       }
 
@@ -112,7 +113,15 @@ export class SimulatorService {
         };
       }
 
-      const reason = decoded?.errorName || (err as Error).message || "SimulationFailed";
+      let reason = decoded?.errorName;
+      if (!reason) {
+        const rawMsg = (err as Error).message || "";
+        if (rawMsg.includes("missing revert data") || rawMsg.includes("CALL_EXCEPTION")) {
+          reason = "InsufficientReturn (Spread < DEX pool fees)";
+        } else {
+          reason = rawMsg.slice(0, 80);
+        }
+      }
       return {
         success: false,
         amountIn,

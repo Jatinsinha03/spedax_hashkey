@@ -1,4 +1,4 @@
-# 🛡️ HashPilot
+# HashPilot
 
 > **The AI trades. The contract decides.**  
 > An autonomous AI trading agent constrained by mathematical smart-contract mandates on **HashKey Chain Mainnet**.
@@ -9,7 +9,7 @@
 
 ---
 
-## 📌 Executive Summary
+## Executive Summary
 
 **HashPilot** is a non-custodial smart-contract trading vault paired with an autonomous AI execution worker built specifically for the **HashKey Chain Mainnet**. 
 
@@ -19,7 +19,7 @@ Autonomous AI agents in Web3 offer incredible potential for identifying micro-in
 
 ---
 
-## 🚨 The Problem
+## The Problem
 
 1. **The Custody Dilemma in AI Trading**: Traditional automated trading bots require users to either deposit capital into centralized custodial pools or hand over unrestricted private keys with unlimited ERC-20 allowances.
 2. **Prompt Injection & Model Hallucinations**: When LLMs orchestrate financial actions, prompt injections or malformed inputs can trick the agent into routing swaps through malicious honeypot contracts or draining vault liquidity.
@@ -28,7 +28,7 @@ Autonomous AI agents in Web3 offer incredible potential for identifying micro-in
 
 ---
 
-## 💡 The HashPilot Solution
+## The HashPilot Solution
 
 HashPilot enforces **defense-in-depth** across three cooperative layers:
 
@@ -77,18 +77,18 @@ flowchart TD
 
 ---
 
-## ⚡ Key Features
+## Key Features
 
-- 🤖 **Autonomous Multi-Token Arbitrage Engine**: Continually scans Uniswap V3 pools on HashKey Chain across multiple fee tiers (0.01%, 0.05%, 0.3%, 1.0%) for triangular and cyclical price spreads.
-- 🧠 **Gemini AI Copilot**: Interactive natural language interface powered by Google Gemini. Users can configure mandates conversationally ("Set my risk to conservative with max 3% drawdown"), review market spreads, and evaluate risk scores.
-- 📊 **Dynamic Policy Diff Visualizer**: Color-coded policy comparison cards that evaluate parameter updates against on-chain safety invariants before transactions are signed.
-- 🛡️ **Interactive Attack Simulator**: A built-in sandbox where users can simulate prompt injections, honeypot tokens, or rogue agent transactions to verify how the smart contract rejects them.
-- ⚡ **Real-Time On-Chain Indexer**: Background indexer polling HashKey Chain logs for deposits, withdrawals, swaps, circuit-breaker trips, and policy updates, displayed in an activity timeline.
-- 🎨 **Obsidian & Violet Pro UI**: State-of-the-art dark terminal design featuring responsive data tables, live gas estimations, and glassmorphic telemetry cards.
+- **Autonomous Multi-Token Arbitrage Engine**: Continually scans Uniswap V3 pools on HashKey Chain across multiple fee tiers (0.01%, 0.05%, 0.3%, 1.0%) for triangular and cyclical price spreads.
+- **Gemini AI Copilot**: Interactive natural language interface powered by Google Gemini. Users can configure mandates conversationally ("Set my risk to conservative with max 3% drawdown"), review market spreads, and evaluate risk scores.
+- **Dynamic Policy Diff Visualizer**: Color-coded policy comparison cards that evaluate parameter updates against on-chain safety invariants before transactions are signed.
+- **Interactive Attack Simulator**: A built-in sandbox where users can simulate prompt injections, honeypot tokens, or rogue agent transactions to verify how the smart contract rejects them.
+- **Real-Time On-Chain Indexer**: Background indexer polling HashKey Chain logs for deposits, withdrawals, swaps, circuit-breaker trips, and policy updates, displayed in an activity timeline.
+- **Obsidian & Violet Pro UI**: State-of-the-art dark terminal design featuring responsive data tables, live gas estimations, and glassmorphic telemetry cards.
 
 ---
 
-## 🌐 HashKey Chain Mainnet Deployments
+## HashKey Chain Mainnet Deployments
 
 | Parameter | Mainnet Value |
 |:---|:---|
@@ -109,7 +109,7 @@ flowchart TD
 
 ---
 
-## 🪙 Whitelisted Tokens (HashKey Chain Mainnet)
+## Whitelisted Tokens (HashKey Chain Mainnet)
 
 | Asset | Token Symbol | Decimals | Contract Address | Role |
 |:---|:---|:---:|:---|:---|
@@ -120,7 +120,7 @@ flowchart TD
 
 ---
 
-## 🏗️ Technical Architecture & Stack
+## Technical Architecture & Stack
 
 - **Smart Contracts**: Solidity `^0.8.20`, OpenZeppelin Contracts (`ReentrancyGuard`, `Pausable`, `EIP712`, `SafeERC20`), Custom Invariant Engine.
 - **Frontend**: Next.js 16 (App Router, Turbopack, Partial Prefetching, Cache Components), React 19, TypeScript.
@@ -132,86 +132,40 @@ flowchart TD
 
 ---
 
-## 🚀 Getting Started
+## How We Scale
 
-### 1. Prerequisites
-- **Node.js**: `v20.x` or `v22.x`
-- **PostgreSQL**: Local database or hosted instance (Supabase, Neon, etc.)
-- **MetaMask**: Configured with HashKey Chain Mainnet (Chain ID 177) and a small amount of `HSK` for gas.
+HashPilot is architected from day one to scale across capital volume, liquidity venues, computational density, and institutional trust requirements:
 
-### 2. Clone and Install Dependencies
-```bash
-git clone https://github.com/Khushalseth/spedax_hashkey.git
-cd spedax_hashkey
-npm install
-```
+### 1. Minimal-Proxy Vault Factory Architecture (ERC-1167)
+- Instead of single-tenant deployments, HashPilot uses an **ERC-1167 minimal proxy (clone) factory**.
+- Deploying a new, isolated smart-contract vault costs less than 45,000 gas on HashKey Chain.
+- Each user maintains an independent contract instance with its own high-water mark, balance ledger, and mandate configuration—ensuring zero cross-vault contagion if a specific mandate is breached.
 
-### 3. Environment Configuration
-Create a `.env` file in the root directory (refer to `.env.example`):
+### 2. Multi-Venue DEX & Orderbook Aggregation
+- While Phase 1 focuses on Uniswap V3 liquidity pools, HashPilot's modular router interface allows the contract to plug into:
+  - Concentrated liquidity AMMs (Uniswap V3, PancakeSwap V3).
+  - Standard constant-product pools (Uniswap V2 / HSKSwap V2).
+  - On-chain central limit order books (CLOBs) and RFQ (Request-for-Quote) private market makers.
+- The smart contract evaluates risk invariants purely against **input capital vs. output capital**, regardless of how many DEX hops or protocols are bundled within the atomic cycle.
 
-```env
-# Database URL (PostgreSQL)
-DATABASE_URL="postgresql://user:password@localhost:5432/hashpilot"
+### 3. Distributed Agent Worker Swarm
+- The off-chain opportunity search engine scales horizontally using a **worker swarm model**:
+  - **Scanner Nodes**: Dedicated microservices continuously monitoring mempools, block headers, and pool state ticks via high-speed WebSocket RPC feeds.
+  - **Optimizer Nodes**: Concurrent execution workers solving optimal cyclical trade sizing and routing paths.
+  - **Partitioned Execution**: Vaults are partitioned across execution workers based on asset class and mandate profile to prevent transaction collisions.
 
-# Session Secret (32+ characters)
-SESSION_SECRET="your-super-secure-session-secret-key-at-least-32-chars"
+### 4. Verifiable Off-Chain Compute (Coprocessors & ZK-Proofs)
+- As arbitrage graph complexity increases (e.g. 4-hop and 5-hop cyclical routes across dozens of pools), off-chain coprocessors calculate the optimal path and generate succinct cryptographic proofs.
+- The vault contract verifies the route validity and invariant constraints on-chain in constant time ($O(1)$ verification cost), eliminating gas overhead from path calculations.
 
-# HashKey Chain Mainnet (Chain ID 177)
-NEXT_PUBLIC_CHAIN_ID=177
-NEXT_PUBLIC_CHAIN_NAME="HashKey Chain Mainnet"
-NEXT_PUBLIC_RPC_URL="https://mainnet.hsk.xyz"
-NEXT_PUBLIC_EXPLORER_URL="https://hashkey.blockscout.com"
-NEXT_PUBLIC_CURRENCY_SYMBOL="HSK"
-
-# Contract Addresses
-NEXT_PUBLIC_VAULT_ADDRESS="0x96569fFcb348670f39568AAda596e8f2775310Fd"
-NEXT_PUBLIC_BASE_ASSET_ADDRESS="0xF1B50eD67A9e2CC94Ad3c477779E2d4cBfFf9029"
-NEXT_PUBLIC_ALLOWED_TOKENS="0xB210D2120d57b758EE163cFfb43e73728c471Cf1,0xefd4bC9afD210517803f293ABABd701CaeeCdfd0,0x6119CA49a79f5825C8B345F8d7aC36B272565b14"
-NEXT_PUBLIC_SWAP_ROUTER_ADDRESS="0x56d15cF00b5D853D6eE4CbB1463E6DAD2899fBf5"
-
-# Google Gemini API Key
-GEMINI_API_KEY="your-gemini-api-key"
-
-# Agent Worker Settings
-AGENT_PRIVATE_KEY="optional-private-key-for-submitting-trades"
-SIMULATE_ONLY="true"
-POLL_INTERVAL_MS="4000"
-MIN_NET_PROFIT_USDT="0.005"
-```
-
-### 4. Initialize Database
-```bash
-# Push Prisma schema to your database
-npx prisma db push
-
-# Seed initial token catalog and default pools
-npm run seed
-```
-
-### 5. Run the Application
-```bash
-# Start Next.js development server
-npm run dev
-
-# Open in browser: http://localhost:3000
-```
-
-### 6. Run the Autonomous Worker & Indexer
-In separate terminal windows:
-```bash
-# Run the background arbitrage worker (scanning opportunities)
-npm run agent
-
-# Or run the worker once in simulation mode
-npm run agent:simulate
-
-# Run the on-chain event indexer
-npm run index:events
-```
+### 5. Institutional Custody & Standardized Vault Modules (ERC-4626)
+- **Safe (Gnosis Safe) Integration**: Compatible with institutional multisig wallets where Safe modules act as the vault owner, requiring multi-party authorization for policy adjustments.
+- **ERC-4626 Tokenized Share Vaults**: Expanding vault architecture to allow multiple liquidity providers to deposit into managed strategy pools with automated yield accounting and performance fee splits.
+- **Automated Rebalancing**: Expanding beyond pure arbitrage into automated yield farming and peg-stability arbitrage inside contract-enforced risk boundaries.
 
 ---
 
-## 🔒 Security & Invariant Audit Matrix
+## Security & Invariant Audit Matrix
 
 | Attack / Failure Vector | Traditional Agent Bot | HashPilot Vault Enforcement |
 |:---|:---:|:---|
@@ -224,6 +178,6 @@ npm run index:events
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the **MIT License**.

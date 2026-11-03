@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { VaultTokenDistribution } from "@/components/VaultTokenDistribution";
 
 export default function LandingPage() {
   // DOM Refs for interactive canvases
@@ -1148,6 +1149,28 @@ export default function LandingPage() {
               <span>Hover the chart for a crosshair</span>
               <span>Mandate locked on-chain</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* -------------------------------------------------------------------- */}
+      {/* SECTION: LIVE VAULT BALANCE & TOKEN DISTRIBUTION                     */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="sec dark border-t border-white/5" id="vault-assets">
+        <div className="wrap">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="mono tag rv">On-Chain Asset Breakdown</span>
+              <h2 className="split h mt-1 text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+                Vault Balance &amp; Asset Distribution
+              </h2>
+            </div>
+            <p className="lead rv text-sm sm:text-base max-w-xl text-slate-400 m-0">
+              Transparently monitor your smart-contract vault balance and the live distribution across all supported tokens (USDT, WHSK, WETH, WBTC) on HashKey Chain Mainnet.
+            </p>
+          </div>
+          <div className="rv">
+            <VaultTokenDistribution />
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useVault } from "@/context/VaultContext";
 import { RiskGauge } from "@/components/RiskGauge";
+import { VaultTokenDistribution } from "@/components/VaultTokenDistribution";
 import { QuickControls } from "@/components/QuickControls";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { formatAddress, getExplorerAddressUrl } from "@/lib/web3";
@@ -164,6 +165,9 @@ export default function DashboardPage() {
 
       {/* Circuit Breaker & Risk Gauge */}
       <RiskGauge />
+
+      {/* Vault Balance & Token Distribution */}
+      <VaultTokenDistribution />
 
       {/* Queued Policy Change Banner (If Any Riskier Change is Pending) */}
       {selectedVault.pendingPolicy && (
